@@ -1,0 +1,57 @@
+{
+  "title": "图表",
+  "icon": "icon-tubiao",
+  "opened": false,
+  "items": [
+    {
+      "text": "bar",
+      "icon": "icon-barchart",
+      "isFontIcon": true,
+      "info": {
+        "type": "bar",
+        "action": [],
+        "dataBind": {
+          "sn": "",
+          "title": "",
+          "biz": "",
+          "queryParam": {}
+        },
+        "style": {
+          "position": {
+            "x": 0,
+            "y": 0,
+            "w": 200,
+            "h": 200
+          },
+          "backColor": "white",
+          "zIndex": 1
+        }
+      }
+    },
+    {
+      "text": "line",
+      "icon": "icon-chart",
+      "isFontIcon": true,
+      "info": {
+        "type": "line",
+        "action": [],
+        "dataBind": {
+          "sn": "",
+          "title": "",
+          "biz": "",
+          "queryParam": {}
+        },
+        "style": {
+          "position": {
+            "x": 0,
+            "y": 0,
+            "w": 200,
+            "h": 200
+          },
+          "backColor": "white",
+          "zIndex": 1
+        }
+      }
+    }
+  ]
+}
