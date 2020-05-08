@@ -1,0 +1,93 @@
+{
+  "id": "",
+  "name": "",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "1598169",
+      "name": "image",
+      "font_class": "image",
+      "unicode": "e606",
+      "unicode_decimal": 58886
+    },
+    {
+      "icon_id": "2564760",
+      "name": "chart",
+      "font_class": "chart",
+      "unicode": "e7fc",
+      "unicode_decimal": 59388
+    },
+    {
+      "icon_id": "3751951",
+      "name": "图表",
+      "font_class": "tubiao",
+      "unicode": "e83f",
+      "unicode_decimal": 59455
+    },
+    {
+      "icon_id": "5326840",
+      "name": "text",
+      "font_class": "text",
+      "unicode": "e63e",
+      "unicode_decimal": 58942
+    },
+    {
+      "icon_id": "10793713",
+      "name": "水平居中对齐_对齐操作_jurassic",
+      "font_class": "jurassic_horizalign-center",
+      "unicode": "e706",
+      "unicode_decimal": 59142
+    },
+    {
+      "icon_id": "10793715",
+      "name": "水平右对齐_对齐操作_jurassic",
+      "font_class": "jurassic_horizalign-right",
+      "unicode": "e707",
+      "unicode_decimal": 59143
+    },
+    {
+      "icon_id": "10793717",
+      "name": "水平左对齐_对齐操作_jurassic",
+      "font_class": "jurassic_horizalign-left",
+      "unicode": "e708",
+      "unicode_decimal": 59144
+    },
+    {
+      "icon_id": "10793757",
+      "name": "垂直底对齐_对齐操作_jurassic",
+      "font_class": "jurassic_verticalalign-bottom",
+      "unicode": "e710",
+      "unicode_decimal": 59152
+    },
+    {
+      "icon_id": "10793759",
+      "name": "垂直顶对齐_对齐操作_jurassic",
+      "font_class": "jurassic_verticalalign-top",
+      "unicode": "e711",
+      "unicode_decimal": 59153
+    },
+    {
+      "icon_id": "10793760",
+      "name": "垂直居中对齐_对齐操作_jurassic",
+      "font_class": "jurassic_verticalalign-center",
+      "unicode": "e712",
+      "unicode_decimal": 59154
+    },
+    {
+      "icon_id": "12194039",
+      "name": "bar chart",
+      "font_class": "barchart",
+      "unicode": "ec04",
+      "unicode_decimal": 60420
+    },
+    {
+      "icon_id": "14183086",
+      "name": "61_基础设置",
+      "font_class": "61_jichushezhi",
+      "unicode": "e67c",
+      "unicode_decimal": 59004
+    }
+  ]
+}

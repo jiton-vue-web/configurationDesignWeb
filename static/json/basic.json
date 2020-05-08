@@ -1,0 +1,64 @@
+{
+  "title": "基本",
+  "icon": "icon-jichushezhi",
+  "opened": false,
+  "items": [
+    {
+      "text": "Text",
+      "icon": "icon-text",
+      "isFontIcon": true,
+      "info": {
+        "type": "text",
+        "action": [],
+        "dataBind": {
+          "sn": "",
+          "title": "",
+          "biz": "",
+          "queryParam": {}
+        },
+        "style": {
+            "x": 50,
+            "y": 50,
+            "w": 100,
+            "h": 100,
+          "backColor": "transparent",
+          "foreColor": "#FF0000",
+          "zIndex": 1,
+          "transform": 0,
+          "text": "Test",
+          "textAlign": "center",
+          "fontSize": 30,
+          "fontFamily": "Arial",
+          "lineHeight": 100
+        }
+      }
+    },
+    {
+      "text": "Image",
+      "icon": "icon-image",
+      "isFontIcon": true,
+      "info": {
+        "type": "Image",
+        "action": [],
+        "dataBind": {
+          "sn": "",
+          "title": "",
+          "biz": "",
+          "queryParam": {}
+        },
+        "style": {
+            "x": 100,
+            "y": 100,
+            "w": 100,
+            "h": 100,
+          "icon": "icon-image",
+          "backColor": "transparent",
+          "zIndex": 1,
+          "fontSize": 6,
+          "transform": 0,
+          "url": ""
+        }
+      }
+    }
+  ]
+}
