@@ -1,13 +1,13 @@
 <template>
   <vue-draggable-resizable
     class="draText"
-    :class="{pointStyle:detail.active}"
+    :class="{pointStyle:active}"
     :onDragStart="onDragStartCallback"
     @dragstop="(x,y) => onDrag(x,y, type)"
     @resizing="(x,y,w,h) => onResize(x,y,w,h, type)"
     @dragging="onDragging"
     @activated="onActivated"
-   
+    @deactivated ="onDeactivated"
     :id="detail.id"
     :active="active"
     :parent="true"
@@ -19,7 +19,7 @@
     :y="detail.style.y"
     :w="detail.style.w"
     :h="detail.style.h">
-    <div @keyup.delete="del(detail)" tabindex="1">
+    <div @keyup.delete="del()" tabindex="1">
       <div class="view-text" v-if="detail.style!=undefined" :style="{
         fontSize: detail.style.fontSize + 'px',
         fontFamily: detail.style.fontFamily,
@@ -27,8 +27,6 @@
         textAlign: detail.style.textAlign,
         lineHeight: detail.style.lineHeight + 'px',}">
         {{detail.id}}
-        <!-- -{{detail.active}} -->
-        <!-- <div style="font-size:14px">{{detail.style.x}}-{{detail.style.y}}</div> -->
       </div>
     </div>
   </vue-draggable-resizable>
@@ -67,6 +65,9 @@
      computed: {
       modulesText(){
         return this.$store.getters.getAllComponents;
+      },
+      selectedStatus(){
+        return this.$store.getters.getSelectedStatus;
       }
     },
     watch: {
@@ -75,12 +76,12 @@
           this.active = newName
         },
         immediate: true,
-        // deep: true
       }
     } ,
     methods: {
-      del (n) {
-        this.$emit('remove', n)
+      //删除选中元素
+      del() {
+         this.$store.commit('removeComponents')
       },
       getRefLineParams (params) {
         this.$emit('getRefLineParams', params)
@@ -90,52 +91,102 @@
       },
       onResize (x, y, w, h, type) {
         this.$store.commit('updateTextStyleResize', {x, y, w, h, type})
-
       },
       onDrag (x, y, type) {
-        this.$store.commit('updateTextStyleDrag', {x, y, type})
+        this.$store.commit('updateTextStyleDrag', {x, y, type});
+        // this.$store.commit('selectedStatus', [])
       },
       //点击元素外任何地方的时候执行
       onDeactivated(){
-        // this.$store.commit('selectedStatus', {operate:1,obj:null}) 
+         let arr = this.$store.getters.getSelectedStatus;
+         //已选只有单个元素的时候清空已选数组
+         if(arr.length == 1 && !event.ctrlKey){
+            this.$store.commit('selectedStatus', [])
+         }
       },
        //被拖动的时候执行
       onDragging (x,y) {
+        let arr = this.$store.getters.getSelectedStatus;
+        let _this = this;
         
-        let obj = { 
-            id:this.detail.id,
-            type:this.detail.type,
-            style:this.detail.style,
-          };
+        //如果是多选拖拽
+        if(arr.length >1){
+          let viewZone = this.$store.getters.getViewZoneInfor;
+          //计算当前位置与初始位置差距
+          let Xposition = this.detail.style.x;
+          let Yposition = this.detail.style.y;
+          let left = x - Xposition ;
+          let top = y - Yposition;
+          
+          arr.forEach(ele =>{
+              if(ele.id != _this.detail.id){
+                // x>左边框 && x+w<右边框
+                // y>上边框 && y+h<下边框
+                let xRange = (ele.style.x + left) < 0 ? 0 : (ele.style.x + left);
+                    xRange = xRange > viewZone.width ? viewZone.width : xRange;
+                let yRange = (ele.style.y + top) < 0 ? 0 : (ele.style.y + top);
+                    yRange = yRange > viewZone.height ? viewZone.height : yRange;
+                    ele.style.x = xRange;
+                    ele.style.y = yRange;
+              }else{
+                ele.style.x = x;
+                ele.style.y = y;
+              }
+          })
+          this.$store.commit('selectedStatus', arr) 
+        }else{
+            let obj = { 
+              id:this.detail.id,
+              type:this.detail.type,
+              style:this.detail.style,
+              active:true
+            };
 
-        obj.style.x = x;
-        obj.style.y = y;
+            obj.style.x = x;
+            obj.style.y = y;
 
-        this.eleObj = obj;
-        // this.$store.commit('switchStatus', {operate:1,obj:obj}) 
-        // this.$store.commit('selectedStatus', {operate:0,obj:obj}) 
+            this.$store.commit('selectedStatus', [obj]) 
+        }
+          
       },
       //失去焦点，再次获得时执行
       onActivated (id) {
-      
-        console.log(id)
-        // let  _this = this;
-        // //从未选删除，加入已选
-        //   let obj = null;
+        console.log(event.ctrlKey)
+        console.log("0000")
+        //按下ctrl键
+        if(event.ctrlKey){
+          let obj = { 
+              id:this.detail.id,
+              type:this.detail.type,
+              style:this.detail.style,
+              active:true
+            };
+          this.$store.commit('addSelectedStatus', obj) 
 
-        //   modulesText.forEach(element => {
-        //     if(element.id == _this.detail.id){
-        //       obj = element;
-        //     }
-        //   });
-
-           
-          // this.$store.commit('selectedStatus', {operate:1,obj:this.detail}) 
-          // this.$store.commit('selectedStatus', {operate:0,obj:this.detail}) 
-          // this.$store.commit('switchStatus', {operate:1,obj:this.detail})
-        
+        }else{
+          let arr = this.$store.getters.getSelectedStatus;
+          let flag = false;
+          arr.forEach(item => {
+            if(item.id == id){
+              flag = true;
+            }
+          })
+          
+          //点击的元素不属于框选元素的时候执行
+          if(!flag){
+                let obj = { 
+                    id:this.detail.id,
+                    type:this.detail.type,
+                    style:this.detail.style,
+                    active:true
+                  };
+                this.$store.commit('selectedStatus', [obj]) 
+          }
+        }
+         
       },
       ifActive(val){
+        //选中状态改变时，修改数组
         this.active = val.ifActive;       
       }
     },

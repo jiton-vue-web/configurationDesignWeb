@@ -16,9 +16,9 @@
       </el-form-item>
     </el-form> -->
 
-    <component :is="componentType"></component>
+    <!-- <component :is="componentType"></component> -->
 
-    <!-- <textView :obj="obj"></textView> -->
+    <textView :obj="obj"></textView>
     <input type="hidden" :value="obj">
   </div>
 </template>
@@ -48,16 +48,16 @@
             return this.$store.getters.getAllComponents
         }
     },
-    watch:{
-      obj: {
-         handler(newVal, oldVal){
-            if(oldVal.length == 0){
-              this.componentType = ()=> import('./attrComponents/' + newVal[0].type + '.vue')
-            }
-        },
-        deep: true
-      }
-    },
+    // watch:{
+    //   obj: {
+    //      handler(newVal, oldVal){
+    //         if(oldVal.length == 0){
+    //           this.componentType = ()=> import('./attrComponents/' + newVal[0].type + '.vue')
+    //         }
+    //     },
+    //     deep: true
+    //   }
+    // },
     methods: {}
   }
 </script>

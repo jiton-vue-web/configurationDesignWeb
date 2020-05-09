@@ -7,7 +7,7 @@
       [classNameResizing]: resizing,
       [classNameDraggable]: draggable,
       [classNameResizable]: resizable
-    }, className]"
+    }, className,,{changeColor:active}]"
     @mousedown="elementDown"
     @touchstart="elementTouchDown"
   >
@@ -424,7 +424,7 @@ export default {
         
         if (this.enabled && !this.preventDeactivation ) {
           this.enabled = false
-          this.$emit('deactivated',this.id)
+          this.$emit('deactivated')
           this.$emit('update:false')
         }
 
@@ -1108,3 +1108,13 @@ export default {
   }
 }
 </script>
+<style scoped>
+.changeColor{
+    background:#409EFF;
+    
+}
+
+.changeColor .view-text{
+    color:#fff !important;
+}
+</style>

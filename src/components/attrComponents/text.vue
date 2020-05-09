@@ -35,7 +35,7 @@
     },
     computed: {
       obj() {
-           let arr = this.$store.getters.getAllComponents;
+           let arr = this.$store.getters.getSelectedStatus;
             if(arr.length == 1){
                 this.formInline = arr[0].style;
             }

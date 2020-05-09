@@ -22,7 +22,7 @@
             "w": 100,
             "h": 100,
           "backColor": "transparent",
-          "foreColor": "#FF0000",
+          "foreColor": "#409EFF",
           "zIndex": 1,
           "transform": 0,
           "text": "Test",

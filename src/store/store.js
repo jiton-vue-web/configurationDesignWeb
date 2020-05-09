@@ -8,13 +8,8 @@ export default new Vuex.Store({
   state: {
     switchElement: [], //编辑区所有控件
     selectedComponents:[], //当前选中的控件
-    /*textStyles: {
-      type: '',
-      moveX: 0,
-      moveY: 0,
-      width: 100,
-      height: 100
-    },*/
+    initialPoint:{},//框选起始点
+    viewZone:{}, //放置组件的区域范围信息
     components: [ //页面上所有使用的组件
       // {
       //   id:"0000",
@@ -37,7 +32,8 @@ export default new Vuex.Store({
       //     lineHeight: 100
       //   }
       // }
-    ]
+    ],
+    
   },
   getters: {
     saleProducts: (state) => {
@@ -53,10 +49,16 @@ export default new Vuex.Store({
       return state.switchElement
     },
     getAllComponents:(state)=>{
-      return state.switchElement.concat(state.selectedComponents)
+      return state.switchElement
     },
     getSelectedStatus:(state)=>{
       return state.selectedComponents
+    },
+    getViewZoneInfor:(state)=>{
+      return state.viewZone
+    },
+    getInitialPoint:(state)=>{
+      return state.initialPoint
     }
   },
   mutations: {
@@ -67,66 +69,75 @@ export default new Vuex.Store({
       })
       // }, 3000)
     },
-
-    //编辑区未选中控件
-    switchStatus: (state, payload) => {
-      if(payload.operate == 0){
-        payload.obj.active = false;
-        state.switchElement.push(payload.obj)
-      }else{
-        let flagIndex = [];
-        state.switchElement.forEach((item,index) =>{
-          if(item.id == payload.obj.id){
-            flagIndex.push(index);
-          }
-        });
-        state.switchElement.splice(flagIndex[0], 1);
-      }
-
-      console.log("未选中")
-      console.log(state.switchElement)
-      console.log("----")
-
+    //保存编辑区面积信息
+    viewZoneInfor:(state,payload)=>{
+        state.viewZone = payload;
     },
-    //多选当前选中的控件
+    //当前选中的控件
     selectedStatus:(state, payload) => {
-      if(payload.operate == 0){
-            
-            let flag = [];
-            // 去重
-            state.selectedComponents.forEach((item,index) =>{
-              if(item.id == payload.obj.id){
-                  flag.push(index);
-              }
-            });
-
-            if(flag.length>0){
-              state.selectedComponents.splice(flag[0], 1,payload.obj);
-              // state.selectedComponents[flag[0]]= payload.obj;
-
-            }else{
-              debugger;
-              payload.obj.active = true;
-              state.selectedComponents.push(payload.obj)
+        // 去重
+        let flag = [];
+        let arr = [];
+        
+        //所有状态设为false
+        state.switchElement.forEach((element,j) =>{
+          let obj= {
+              id:element.id,
+              style:element.style,
+              type:element.type,
+              active:false
             }
-
-      }else{
-        state.selectedComponents.forEach((item)=>{
-          item.active = false;
-          state.switchElement.push(item)
+              arr.push(obj);
         })
 
-        state.selectedComponents = []
-      }
+        //已选加入到所有组件中
+        payload.forEach((ele,i)=>{
+              state.switchElement.forEach((item,index) =>{
+                if(item.id == ele.id){
+                    arr.splice(index,1,ele);
+                    flag.push(index)
+                }
+            })
+        });
+        
+        //无重复说明是新增元素
+        if(flag.length == 0 && payload.length == 1){
+          arr.push(payload[0])
+        }
+
+        state.selectedComponents = payload;
+        state.switchElement = arr;
 
       console.log("已选中")
       console.log(state.selectedComponents)
       console.log("----")
 
     },
-    //框选移动直接存值
-    setselectedComponents:(state, payload) => {
-       state.selectedComponents = payload;
+    //按下CTRL键时，直接添加到已选数组
+    addSelectedStatus:(state, payload) => {
+
+      state.selectedComponents.push(payload)
+      console.log("已选中")
+      console.log(state.selectedComponents)
+      console.log("----")
+
+    },
+    //删除选中元素
+    removeComponents:(state,payload) => {
+      let flag = [];
+      state.switchElement.forEach((item,index) =>{
+          if(item.active == false){
+              flag.push(item)
+          }
+      })
+      
+      state.switchElement = flag;
+      state.selectedComponents = [];
+
+    },
+    //保存框选起始点坐标
+    setInitialPoint:(state,payload) => {
+      state.initialPoint = payload;
     },
     /*updateImgStyleResize(state,payload){
       state.imageStyles.moveX = payload.moveX;
@@ -141,8 +152,9 @@ export default new Vuex.Store({
     },*/
 
     updateTextStyleResize (state, payload) {
+      debugger;
       for (let i of state.components) {
-        if (state.switchElement == i.type) {
+        if (state.components == i.type) {
           i.style.x = payload.x
           i.style.y = payload.y
           i.style.w = payload.w
@@ -152,8 +164,9 @@ export default new Vuex.Store({
     },
 
     updateTextStyleDrag (state, payload) {
-      for (let i of state.components) {
-        if (state.switchElement == i.type) {
+      //已选的元素中同类型元素批量操作
+      for (let i of state.selectedComponents) {
+        if (state.selectedComponents == i.type) {
           i.style.x = payload.x
           i.style.y = payload.y
         }
