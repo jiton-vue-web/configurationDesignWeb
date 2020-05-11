@@ -6,7 +6,7 @@
         <view-image :detail="modulesImage" @remove="remove" tabindex="1"></view-image>
       </div>-->
 
-      <div @drop="onDropText($event)" @dragover.prevent style="height:100%;width: 100%;">
+      <div @drop="onDropText($event)" @dragover.prevent @keyup.delete="del($event)" tabindex="1" style="height:100%;width: 100%;">
  
         <view-text 
           v-for="(item,index) in modulesText" 
@@ -68,6 +68,11 @@
     mounted () {
     },
     methods: {
+      del(e){
+         if(e.code == "Delete"){
+          this.$store.commit('removeComponents')
+        }
+      },
       getRefLineParams (params) {
         const {vLine, hLine} = params
         this.vLine = vLine
@@ -113,9 +118,13 @@
         bgBlock.style.opacity = '0.3';
         bgBlock.style.width = 0 +'px';
         bgBlock.style.height = 0 + 'px';
+        
+        //存入框选起点，用于计算框选第一个选中的元素
+        let viewZone = this.$store.getters.getViewZoneInfor;
+        this.$store.commit('setInitialPoint',{x:(initL-viewZone.x) , y:(initT - viewZone.y)})
+        console.log("起始坐标 : ("+(initL-viewZone.x)+","+(initT - viewZone.y)+ ")")
+
         document.onmousemove = (e)=> {
-          //存入框选起点，用于计算框选第一个选中的元素
-          this.$store.commit('setInitialPoint',{x:initL,y:initT})
           let w = e.clientX - initL;
           let h = e.clientY - initT;
           bgBlock.style.width = Math.abs(w) + 'px';
@@ -159,7 +168,6 @@
           let obj = this.blockObj;
           let items = this.modulesText;
           let objArr = [];
-    
           items.forEach(item => {
             if (Math.abs((obj.left + obj.width) - (item.style.x + item.style.w)) + Math.abs(obj.left - item.style.x) < (obj.width + item.style.w) &&
                 Math.abs((obj.top + obj.height) - (item.style.y + item.style.h)) + Math.abs(obj.top - item.style.y) < (obj.height + item.style.h)) { 
@@ -167,9 +175,7 @@
                     objArr.push(item)
                 }
           });
-
           this.$store.commit('selectedStatus', objArr) 
-
         }
         
         this.blockObj = {}

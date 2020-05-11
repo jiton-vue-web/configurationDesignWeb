@@ -115,24 +115,41 @@ export default new Vuex.Store({
     },
     //按下CTRL键时，直接添加到已选数组
     addSelectedStatus:(state, payload) => {
-
-      state.selectedComponents.push(payload)
-      console.log("已选中")
-      console.log(state.selectedComponents)
-      console.log("----")
+      // 框选之后直接ctrl多选，需要去重
+      let repeatIndex = "";
+      let arr = [];
+      state.selectedComponents.forEach((item,index) =>{
+        if(item.id == payload.id){
+            repeatIndex = payload.id;
+        }else{
+            arr.push(item)
+        }
+      })
+       
+      // 没有重复直接插入，有则无需操作
+      if(repeatIndex == ""){
+        state.selectedComponents.push(payload);
+      }
+      
+      state.switchElement.forEach(item => {
+          if(item.id == payload.id){
+            item.active = true;
+          }
+      })
 
     },
     //删除选中元素
     removeComponents:(state,payload) => {
-      let flag = [];
-      state.switchElement.forEach((item,index) =>{
-          if(item.active == false){
-              flag.push(item)
-          }
+      let allElementArr = [];
+
+      state.switchElement.forEach(item => {
+        if(item.active == false){
+            allElementArr.push(item)
+        }
       })
-      
-      state.switchElement = flag;
+
       state.selectedComponents = [];
+      state.switchElement = allElementArr;
 
     },
     //保存框选起始点坐标
@@ -152,19 +169,16 @@ export default new Vuex.Store({
     },*/
 
     updateTextStyleResize (state, payload) {
-      debugger;
-      for (let i of state.components) {
-        if (state.components == i.type) {
-          i.style.x = payload.x
-          i.style.y = payload.y
-          i.style.w = payload.w
-          i.style.h = payload.h
-        }
-      }
+        state.switchElement.forEach(item => {
+          if(item.active == true){
+            item.style.w = payload.w
+            item.style.h = payload.h
+          }
+        })
     },
 
     updateTextStyleDrag (state, payload) {
-      //已选的元素中同类型元素批量操作
+      //位置变化
       for (let i of state.selectedComponents) {
         if (state.selectedComponents == i.type) {
           i.style.x = payload.x

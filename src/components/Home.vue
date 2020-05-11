@@ -172,10 +172,6 @@
             minDistanceObj.push({id:k,min:minDistance})
           }
 
-          console.log(minDistanceObj);
-          console.log("直线距离");
-
-
           //所有元素最小值比较得出最终id
           let minDistanceArr = []
           minDistanceObj.forEach((element,index) =>{
@@ -186,7 +182,6 @@
             }
           })
 
-          console.log("最小距离id" + minDistanceArr[0].id);
           // minDistanceArr[0].id 即距离最近的控件
           let minObj = {};
           for(let i = 0, len = arr.length; i<len;i++){
@@ -208,33 +203,32 @@
              //最近元素本身不需要移动
              if(arr[n].id != minObj.id){
                if(val == 0){
-                  let x = arr[n].style.x + (arr[n].style.w / 2);
-                  if(x > centerX){
-                    arr[n].style.x = arr[n].style.x - Math.abs( x - centerX);
-                  }else{
-                    arr[n].style.x = arr[n].style.x + Math.abs( x - centerX);
-                  }
-                  // arr[n].style.x = arr[n].style.x - (arr[n].style.w / 2) + arr[n].style.x - centerX; 
+                    let x = arr[n].style.x + (arr[n].style.w / 2);
+                    if(x > centerX){
+                      arr[n].style.x = arr[n].style.x - Math.abs( x - centerX);
+                    }else{
+                      arr[n].style.x = arr[n].style.x + Math.abs( x - centerX);
+                    }
                 }else{
-                  // arr[n].style.y = arr[n].style.y - (arr[n].style.h / 2) + arr[n].style.y - centerY;
                     let y = arr[n].style.y + (arr[n].style.h / 2);
                     if(y > centerY){
                       arr[n].style.y = arr[n].style.y - Math.abs( y - centerY);
                     }else{
-                      arr[n].style.x = arr[n].style.y + Math.abs( y - centerY);
+                      arr[n].style.y = arr[n].style.y + Math.abs( y - centerY);
                     }
                 }
              }
               
           }
 
-console.log("数组")
-console.log(arr)
+          console.log("数组")
+          console.log(arr)
           this.$store.commit('selectedStatus', arr) 
       },
       //计算三角形斜边，用于计算选框起始点到选中元素四点之间的距离
       calcLine(pointArr){
         let point = this.$store.getters.getInitialPoint;
+        console.log("fun起始坐标 : ("+point.x+","+point.y+ ")")
         let distanceArr = [];
 
         pointArr.forEach((item) =>{
@@ -246,79 +240,6 @@ console.log(arr)
 
         return Math.min(...distanceArr)
       }
-
-      // setCenterOrMiddle
-
-      // leftJustify () {
-      //   let textX = this.$store.state.textStyles.moveX
-      //   let imageX = this.$store.state.imageStyles.moveX
-      //   if (textX < imageX) {
-      //     this.$store.state.imageStyles.moveX = textX
-      //   } else {
-      //     this.$store.state.textStyles.moveX = imageX
-      //   }
-      // },
-      // rightJustify () {
-      //   let textW = this.$store.state.textStyles.width
-      //   let imageW = this.$store.state.imageStyles.width
-      //   let textX = this.$store.state.textStyles.moveX + textW
-      //   let imageX = this.$store.state.imageStyles.moveX + imageW
-      //   if (textX > imageX) {
-      //     this.$store.state.imageStyles.moveX = textX - imageW
-      //   } else {
-      //     this.$store.state.textStyles.moveX = imageX - textW
-      //   }
-      // },
-      // bottomJustify () {
-      //   let textH = this.$store.state.textStyles.height
-      //   let imageH = this.$store.state.imageStyles.height
-      //   let textY = this.$store.state.textStyles.moveY + textH
-      //   let imageY = this.$store.state.imageStyles.moveY + imageH
-      //   if (textY > imageY) {
-      //     this.$store.state.imageStyles.moveY = textY - imageH
-      //   } else {
-      //     this.$store.state.textStyles.moveY = imageY - textH
-      //   }
-      // },
-      // topJustify () {
-      //   let textY = this.$store.state.textStyles.moveY
-      //   let imageY = this.$store.state.imageStyles.moveY
-      //   if (textY < imageY) {
-      //     this.$store.state.imageStyles.moveY = textY
-      //   } else {
-      //     this.$store.state.textStyles.moveY = imageY
-      //   }
-      // },
-      // horizalignCenter () {
-      //   let textX = this.$store.state.textStyles.moveX;
-      //   let imageX = this.$store.state.imageStyles.moveX;
-      //   let tH = this.$store.state.textStyles.height / 2; //text高度的一半
-      //   let iH = this.$store.state.imageStyles.height / 2; //image 高度的一半
-      //   let icenterY = this.$store.state.imageStyles.moveY + iH; //image 中心线
-      //   let tcenterY = this.$store.state.textStyles.moveY + tH;//text 中心线
-      //   if (textX < imageX) {
-      //     this.$store.state.imageStyles.moveY = tcenterY - iH;
-      //   } else {
-      //     console.log("图片中心线:"+icenterY+"------文字高度的一半："+tH+"------文字Y轴结果："+(icenterY - tH));
-      //     this.$store.state.textStyles.moveY = icenterY - tH;
-      //     console.log(this.$store.state.textStyles.moveY);
-      //   }
-      // },
-      // verticalalignCenter(){
-      //   let textX = this.$store.state.textStyles.moveX;
-      //   let imageX = this.$store.state.imageStyles.moveX;
-      //   let tW = this.$store.state.textStyles.width / 2; //text 宽度的一半
-      //   let iW = this.$store.state.imageStyles.width / 2; //image 宽度的一半
-      //   let icenterX = this.$store.state.imageStyles.moveX + iW; //image 中心线
-      //   let tcenterX = this.$store.state.textStyles.moveX + tW; //text 中心线
-      //   if (textX < imageX) {
-      //     this.$store.state.imageStyles.moveX = tcenterX - iW;
-      //   } else {
-          // console.log("图片中心线:"+icenterX+"------文字宽度的一半："+tW+"------文字X轴结果："+(icenterX - tW));
-          // this.$store.state.textStyles.moveX = icenterX - tW;
-          // console.log(this.$store.state.textStyles.moveX);
-      //   }
-      // }
     },
     computed: {},
 

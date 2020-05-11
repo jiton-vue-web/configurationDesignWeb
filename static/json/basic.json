@@ -38,7 +38,7 @@
       "icon": "icon-image",
       "isFontIcon": true,
       "info": {
-        "type": "Image",
+        "type": "image",
         "action": [],
         "dataBind": {
           "sn": "",

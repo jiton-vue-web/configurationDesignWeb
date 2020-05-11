@@ -1,37 +1,18 @@
 <template>
   <div>
     <div class="title-style">{{$t('message.style')}}</div>
-    <!-- <el-form label-position="left" label-width="80px" class="padding-2">
-      <el-form-item label="X" size="mini">
-        <el-input v-model.number="initContent.x" type="number"></el-input>
-      </el-form-item>
-      <el-form-item label="Y">
-        <el-input v-model.number="initContent.y" type="number"></el-input>
-      </el-form-item>
-      <el-form-item label="Width" size="mini">
-        <el-input v-model.number="initContent.w" type="number"></el-input>
-      </el-form-item>
-      <el-form-item label="Height">
-        <el-input v-model.number="initContent.h" type="number"></el-input>
-      </el-form-item>
-    </el-form> -->
-
-    <!-- <component :is="componentType"></component> -->
-
-    <textView :obj="obj"></textView>
-    <input type="hidden" :value="obj">
+    <component :is="boxType" :obj="obj"></component>
   </div>
 </template>
 
 <script>
   import {mapState} from 'vuex'
-  import textView from './attrComponents/text.vue'
   
   export default {
     name: 'EditorStyle',
     data () {
       return {
-        componentType:()=> import('./attrComponents/text.vue')
+        boxType:""
       }
     },
     created () {
@@ -40,24 +21,26 @@
     mounted () {
 
     },
-    components:{
-      textView
-    },
     computed: {
         obj() {
-            return this.$store.getters.getAllComponents
+            let seletedComponent = this.$store.getters.getSelectedStatus;
+            // 如果已选已为零，判断所有组件为零则清空右侧属性界面
+            if(seletedComponent.length == 0){
+              let allObj = this.$store.getters.getAllComponents;
+              if(allObj.length == 0){
+                this.boxType = "";
+              }
+            }
+            //只有一个已选中，直接显示已定义好的各个类型组件模板
+            if(seletedComponent.length == 1){
+              this.boxType = ()=> import('./attrComponents/'+ seletedComponent[0].type +'.vue');
+              return seletedComponent[0].style;
+            }
+
+            //多个已选中，判断哪些属性为所有组件共同属性，存为style对象，传入子组件显示
+
         }
     },
-    // watch:{
-    //   obj: {
-    //      handler(newVal, oldVal){
-    //         if(oldVal.length == 0){
-    //           this.componentType = ()=> import('./attrComponents/' + newVal[0].type + '.vue')
-    //         }
-    //     },
-    //     deep: true
-    //   }
-    // },
     methods: {}
   }
 </script>

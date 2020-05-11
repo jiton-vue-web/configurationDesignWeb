@@ -19,15 +19,10 @@
     :y="detail.style.y"
     :w="detail.style.w"
     :h="detail.style.h">
-    <div @keyup.delete="del()" tabindex="1">
-      <div class="view-text" v-if="detail.style!=undefined" :style="{
-        fontSize: detail.style.fontSize + 'px',
-        fontFamily: detail.style.fontFamily,
-        color: detail.style.foreColor,
-        textAlign: detail.style.textAlign,
-        lineHeight: detail.style.lineHeight + 'px',}">
-        {{detail.id}}
-      </div>
+    <div @keyup.delete="del($event)" tabindex="1" v-focus style="display:flex;width:100%">
+      <!-- 编辑区加载不同组件的地方，以下 -->    
+       <component :is="viewZoneComponent" :obj="detail"></component>
+      <!-- 编辑区加载不同组件的地方，以上-->
     </div>
   </vue-draggable-resizable>
 
@@ -36,9 +31,7 @@
 <script>
 
   import {mapState} from 'vuex'
-
-  import vueDraggableResizable from './vue-draggable-resizable'
-
+  import vueDraggableResizable from './vue-draggable-resizable' 
 
   export default {
     name: 'view-text',
@@ -60,6 +53,7 @@
         lists: {},
         eleObj:{},
         active:true,
+        viewZoneComponent:""
       }
     },
      computed: {
@@ -76,12 +70,27 @@
           this.active = newName
         },
         immediate: true,
+      },
+       'detail.type': {
+        handler(newName, oldName) {
+          this.viewZoneComponent = ()=> import('./editorComponents/'+ newName +'View.vue');
+        },
+        immediate: true,
       }
     } ,
+    directives:{
+        focus:{
+            inserted: function (el) {
+                el.focus()
+            }
+        }
+    },
     methods: {
       //删除选中元素
-      del() {
-         this.$store.commit('removeComponents')
+      del(e) {
+        if(e.code == "Delete"){
+          this.$store.commit('removeComponents')
+        }
       },
       getRefLineParams (params) {
         this.$emit('getRefLineParams', params)
@@ -89,12 +98,11 @@
       onDragStartCallback (ev) {
         ev.stopPropagation()
       },
-      onResize (x, y, w, h, type) {
-        this.$store.commit('updateTextStyleResize', {x, y, w, h, type})
+      onResize (x, y, w, h) {
+        this.$store.commit('updateTextStyleResize', {x, y, w, h})
       },
       onDrag (x, y, type) {
         this.$store.commit('updateTextStyleDrag', {x, y, type});
-        // this.$store.commit('selectedStatus', [])
       },
       //点击元素外任何地方的时候执行
       onDeactivated(){
@@ -174,13 +182,13 @@
           
           //点击的元素不属于框选元素的时候执行
           if(!flag){
-                let obj = { 
-                    id:this.detail.id,
-                    type:this.detail.type,
-                    style:this.detail.style,
-                    active:true
-                  };
-                this.$store.commit('selectedStatus', [obj]) 
+              let obj = { 
+                  id:this.detail.id,
+                  type:this.detail.type,
+                  style:this.detail.style,
+                  active:true
+                };
+              this.$store.commit('selectedStatus', [obj]) 
           }
         }
          
@@ -214,6 +222,10 @@
 
   .pointStyle{
     cursor:move;
+  }
+
+  .draText{
+    display:flex;
   }
 
 </style>

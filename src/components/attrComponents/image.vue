@@ -12,12 +12,6 @@
         <el-form-item label="Height">
             <el-input v-model.number="formInline.h" type="number"></el-input>
         </el-form-item>
-        <el-form-item label="文本" size="mini">
-            <el-input v-model="formInline.text"></el-input>
-        </el-form-item>
-        <el-form-item label="层级" size="mini">
-            <el-input v-model.number="formInline.zIndex" type="number"></el-input>
-        </el-form-item>
         <el-form-item>
             <el-button type="primary" @click="onSubmit">提交</el-button>
         </el-form-item>
