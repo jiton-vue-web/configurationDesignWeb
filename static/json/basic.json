@@ -1,11 +1,11 @@
 {
-  "title": "基本",
+  "title": "基础组件",
   "icon": "icon-jichushezhi",
   "opened": false,
   "items": [
     {
       "text": "Text",
-      "icon": "icon-text",
+      "icon": "el-icon-tickets",
       "isFontIcon": true,
       "info": {
         "type": "text",
@@ -20,22 +20,20 @@
             "x": 50,
             "y": 50,
             "w": 100,
-            "h": 100,
-          "backColor": "transparent",
-          "foreColor": "#409EFF",
+            "h": 50,
+          "backColor": "rgba(0,0,0,0)",
+          "color": "#333",
           "zIndex": 1,
-          "transform": 0,
-          "text": "Test",
+          "text": "Text",
           "textAlign": "center",
-          "fontSize": 30,
-          "fontFamily": "Arial",
-          "lineHeight": 100
+          "fontSize": 16,
+          "lineHeight": 1.25
         }
       }
     },
     {
       "text": "Image",
-      "icon": "icon-image",
+      "icon": "el-icon-picture-outline",
       "isFontIcon": true,
       "info": {
         "type": "image",
@@ -51,12 +49,37 @@
             "y": 100,
             "w": 100,
             "h": 100,
-          "icon": "icon-image",
-          "backColor": "transparent",
+          "backColor": "rgba(0,0,0,0)",
           "zIndex": 1,
-          "fontSize": 6,
-          "transform": 0,
           "url": ""
+        }
+      }
+    },
+    {
+      "text": "Button",
+      "icon": "el-icon-open",
+      "isFontIcon": true,
+      "info": {
+        "type": "button",
+        "action": [],
+        "dataBind": {
+          "sn": "",
+          "title": "",
+          "biz": "",
+          "queryParam": {}
+        },
+        "style": {
+            "x": 100,
+            "y": 100,
+            "w": 100,
+            "h": 50,
+          "backColor": "rgba(196, 83, 83, 0.81)",
+          "zIndex": 1,
+          "borderRadius": "15",
+          "lineHeight": 1.25,
+          "text": "Button",
+          "color": "#333",
+          "fontSize": 16
         }
       }
     }

@@ -223,7 +223,8 @@
 
           console.log("数组")
           console.log(arr)
-          this.$store.commit('selectedStatus', arr) 
+          // this.$store.commit('selectedStatus', arr) 
+          this.$store.commit('selectedStatus', []) 
       },
       //计算三角形斜边，用于计算选框起始点到选中元素四点之间的距离
       calcLine(pointArr){
@@ -262,10 +263,6 @@
     width: 200px;
   }
 
-  .el-main {
-    height: 865px;
-  }
-
   body > .el-container {
     margin-bottom: 40px;
   }
@@ -279,6 +276,12 @@
   .head-font {
     margin: 10px 0;
     color: #3a8ee6;
+  }
+
+  .el-main{
+     border:1px solid #ccc;
+     padding:0;
+     margin:15px;
   }
 
   .flex-box {

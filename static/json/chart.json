@@ -5,7 +5,7 @@
   "items": [
     {
       "text": "bar",
-      "icon": "icon-barchart",
+      "icon": "el-icon-pie-chart",
       "isFontIcon": true,
       "info": {
         "type": "bar",
@@ -30,7 +30,7 @@
     },
     {
       "text": "line",
-      "icon": "icon-chart",
+      "icon": "el-icon-data-line",
       "isFontIcon": true,
       "info": {
         "type": "line",

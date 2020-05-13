@@ -1110,7 +1110,7 @@ export default {
 </script>
 <style scoped>
 .changeColor{
-    background:#409EFF;
+    background:rgba(70, 172, 245, 0.54);
     
 }
 

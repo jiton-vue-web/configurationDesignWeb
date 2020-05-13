@@ -159,8 +159,6 @@
       },
       //失去焦点，再次获得时执行
       onActivated (id) {
-        console.log(event.ctrlKey)
-        console.log("0000")
         //按下ctrl键
         if(event.ctrlKey){
           let obj = { 

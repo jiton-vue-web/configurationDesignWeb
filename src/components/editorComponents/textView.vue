@@ -1,17 +1,18 @@
 <template>
-    <textarea 
+    <input
         class="textareaStyle"
         type="text"
-        :value="obj.id" 
+        v-model="obj.style.text" 
         :style="{
-        'z-index':obj.style.zIndex,
-        fontSize: obj.style.objfontSize + 'px',
-        fontFamily: obj.style.objfontFamily,
-        color: obj.style.objforeColor,
-        textAlign: obj.style.objtextAlign,
-        lineHeight: obj.style.objlineHeight + 'px'}" 
-        >
-    </textarea>
+          zIndex:obj.style.zIndex,
+          fontSize: obj.style.fontSize + 'px',
+          fontFamily: obj.style.fontFamily,
+          color: obj.style.color,
+          textAlign: obj.style.textAlign,
+          lineHeight: obj.style.lineHeight,
+          background: obj.style.backColor
+        }" />
+   
 </template>
 
 <script>
@@ -22,9 +23,9 @@
     // name: 'textArrt',
     props:["obj"],
     data () {
-        return {
-           
-        }
+      return {
+          styleObj:{}
+      }
     },
     methods: {
      
@@ -39,6 +40,7 @@
 .textareaStyle{
   width:100%;
   display:block;
+  border:0;
 }
 </style>
 

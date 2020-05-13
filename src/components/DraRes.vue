@@ -1,13 +1,8 @@
 <template>
   <div>
-    <div id="dragArea" class="page" @mousedown="createBlock" @mouseup="stopBlock">
-
-      <!--<div @drop="onDropImg($event)" @dragover.prevent style="height:100%;width: 100%;">
-        <view-image :detail="modulesImage" @remove="remove" tabindex="1"></view-image>
-      </div>-->
-
-      <div @drop="onDropText($event)" @dragover.prevent @keyup.delete="del($event)" tabindex="1" style="height:100%;width: 100%;">
- 
+   
+    <div id="dragArea" class="page" @mousedown="createBlock" @mouseup="stopBlock" @mousewheel="scaleFun($event)" :style="{transform:`scale(${scale})`}">
+      <div @drop="onDropText($event)" @dragover.prevent @keyup.delete="del($event)" tabindex="1" class="editorBox">
         <view-text 
           v-for="(item,index) in modulesText" 
           :key="index" 
@@ -16,13 +11,7 @@
           @getRefLineParams="getRefLineParams"
            >
         </view-text>
-        <!-- @activated="handlActivate(item)" -->
-         <!-- <div id="selectedZone" >
-            
-        </div> -->
-
         <div id="bgBlock"></div>
-
       </div>
 
       <span class="ref-line v-line" 
@@ -39,6 +28,14 @@
       </span>
 
     </div>
+
+     <div class="sliderStyle">
+      <!-- <span ><el-slider v-model="scale" :min="0.1" :max="5"></el-slider></span>
+      <span style="float:right;">放缩比：{{scaleVal + "%"}}</span> -->
+       <el-slider v-model="scaleVal" :min="10" :max="500" :step="20" show-input> %
+    </el-slider>
+    </div>
+    
   </div>
 </template>
 
@@ -59,13 +56,27 @@
         vLine: [],
         hLine: [],
         blockObj:{},
-        blockBox:{}
+        blockBox:{},
+        scale:1,
+        scaleVal:100,
       }
     },
     created(){
-    // $nextTick  //page
+        window.addEventListener('mousewheel', function(event){
+            if (event.ctrlKey === true || event.metaKey) {
+                  event.preventDefault();
+            }
+        },{ passive: false});
+
+        //firefox
+        window.addEventListener('DOMMouseScroll', function(event){
+            if (event.ctrlKey === true || event.metaKey) {
+                  event.preventDefault();
+            }
+        },{ passive: false});
     },
     mounted () {
+     
     },
     methods: {
       del(e){
@@ -78,16 +89,15 @@
         this.vLine = vLine
         this.hLine = hLine
       },
-      onDropImg (event) {
-        event.preventDefault()
-        let infoJson = event.dataTransfer.getData('my-info')
-        this.modulesImage = JSON.parse(infoJson)
-      },
       //第一次加入编辑区
       onDropText (event) {
         event.preventDefault()
         var layer = event.currentTarget;
         var position = layer.getBoundingClientRect();
+
+        console.log(position)
+        console.log("多位小数")
+
         this.$store.commit('viewZoneInfor', position) 
         console.log(position)
           let infoJson = event.dataTransfer.getData('my-info')
@@ -114,15 +124,18 @@
         let dragArea = document.getElementById("dragArea");
         let initL = e.clientX;
         let initT = e.clientY;
-        
+
         bgBlock.style.opacity = '0.3';
         bgBlock.style.width = 0 +'px';
         bgBlock.style.height = 0 + 'px';
         
         //存入框选起点，用于计算框选第一个选中的元素
         let viewZone = this.$store.getters.getViewZoneInfor;
-        this.$store.commit('setInitialPoint',{x:(initL-viewZone.x) , y:(initT - viewZone.y)})
-        console.log("起始坐标 : ("+(initL-viewZone.x)+","+(initT - viewZone.y)+ ")")
+ 
+        if(viewZone.x){
+          this.$store.commit('setInitialPoint',{x:(initL-viewZone.x) , y:(initT - viewZone.y)});
+          console.log("起始坐标 : ("+(initL-viewZone.x)+","+(initT - viewZone.y)+ ")")
+        }
 
         document.onmousemove = (e)=> {
           let w = e.clientX - initL;
@@ -195,8 +208,61 @@
       //     }
       //   }
       // },
+      scaleFun(e){
+        var _this = this;
+        if(e.ctrlKey && _this.scale > 0.1 && _this.scale <5) {
+          var direction = e.deltaY>0?'down':'up';
+          
+          if(direction == "down"){
+            _this.scale = _this.accSub(_this.scale, 0.2);
+          }else{
+            _this.scale = _this.accAdd(_this.scale , 0.2);
+          }
 
-    },
+         _this.scaleVal = _this.accMul(_this.scale,100)
+        }
+      },
+       // 两个浮点数求和
+      accAdd(num1,num2){
+        var r1,r2,m;
+        try{
+            r1 = num1.toString().split('.')[1].length;
+        }catch(e){
+            r1 = 0;
+        }
+        try{
+            r2=num2.toString().split(".")[1].length;
+        }catch(e){
+            r2=0;
+        }
+        m=Math.pow(10,Math.max(r1,r2));
+        // return (num1*m+num2*m)/m;
+        return Math.round(num1*m+num2*m)/m;
+      },
+      // 两个浮点数相减
+      accSub(num1,num2){
+        var r1,r2,m;
+        try{
+            r1 = num1.toString().split('.')[1].length;
+        }catch(e){
+            r1 = 0;
+        }
+        try{
+            r2=num2.toString().split(".")[1].length;
+        }catch(e){
+            r2=0;
+        }
+        m=Math.pow(10,Math.max(r1,r2));
+        let n=(r1>=r2)?r1:r2;
+        return Number((Math.round(num1*m-num2*m)/m).toFixed(n));
+      },
+      accMul(num1,num2){
+          var m=0,s1=num1.toString(),s2=num2.toString(); 
+          try{m+=s1.split(".")[1].length}catch(e){};
+          try{m+=s2.split(".")[1].length}catch(e){};
+          return Number(s1.replace(".",""))*Number(s2.replace(".",""))/Math.pow(10,m);
+          }
+      },
     computed: {
       modulesText(){
         return this.$store.getters.getAllComponents;
@@ -209,11 +275,12 @@
 </script>
 <style>
   .page {
-    height: 800px;
+    height: calc(100vh - 90px);
     width: 100%;
-    border: 1px solid red;
+    background-color:#fff;
     box-sizing: content-box;
     position: relative;
+    transform-origin:0 0 0;
   }
 
   #bgBlock {
@@ -225,6 +292,17 @@
 
   [tabindex] {
     outline: none !important;
+  }
+
+  .editorBox{
+      height:100%;
+      width: 100%;
+  }
+
+  .sliderStyle{
+    width:300px;
+    position: fixed;
+    bottom:30px;
   }
 
 </style>

@@ -4,12 +4,11 @@
     <el-collapse class="list-box">
       <el-collapse-item v-for="(item,index) in toolbox" :key="index">
         <template slot="title">
-          <i class="icon iconfont" :class="item.icon"></i>
           <p class="box-name">{{item.title}}</p>
         </template>
         <div class="item-flex">
             <div class="flex-item" v-for="(value,index) in item.items" :key="index" draggable="true" @dragstart="onDragstart($event,value)">
-              <i class="iconfont" :class="value.icon"></i>
+              <i class="icon" :class="value.icon"></i>
               <p>{{value.text}}</p>
             </div>
         </div>
@@ -60,8 +59,7 @@
     margin: 5px;
   }
   .icon {
-    font-size: 3rem;
-    margin: 5px;
+    font-size: 24px;
   }
   .box-name {
     margin-left: 15px;
@@ -77,13 +75,14 @@
     flex-direction: row;
     flex-wrap: wrap;
     justify-content:space-around;
+    padding:0 15px;
   }
   .flex-item {
-    width: 80px;
     height: 50px;
+    flex:1;
+    padding:10px 0;
   }
   .flex-item:hover {
-    width: 80px;
     height: 50px;
     background-color: #cccccc;
     color: #2b7de6;

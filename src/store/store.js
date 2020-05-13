@@ -10,30 +10,7 @@ export default new Vuex.Store({
     selectedComponents:[], //当前选中的控件
     initialPoint:{},//框选起始点
     viewZone:{}, //放置组件的区域范围信息
-    components: [ //页面上所有使用的组件
-      // {
-      //   id:"0000",
-      //   type: 'text',
-      //   action: [],
-      //   dataBind: {},
-      //   style: {
-      //     x: 50,
-      //     y: 50,
-      //     w: 100,
-      //     h: 100,
-      //     backColor: 'transparent',
-      //     foreColor: '#FF0000',
-      //     zIndex: 1,
-      //     transform: 0,
-      //     text: 'Test',
-      //     textAlign: 'center',
-      //     fontSize: 30,
-      //     fontFamily: 'Arial',
-      //     lineHeight: 100
-      //   }
-      // }
-    ],
-    
+    scaleVal:1,//编辑区放大倍数
   },
   getters: {
     saleProducts: (state) => {
@@ -87,7 +64,7 @@ export default new Vuex.Store({
               type:element.type,
               active:false
             }
-              arr.push(obj);
+            arr.push(obj);
         })
 
         //已选加入到所有组件中
@@ -156,18 +133,10 @@ export default new Vuex.Store({
     setInitialPoint:(state,payload) => {
       state.initialPoint = payload;
     },
-    /*updateImgStyleResize(state,payload){
-      state.imageStyles.moveX = payload.moveX;
-      state.imageStyles.moveY = payload.moveY;
-      state.imageStyles.width = payload.width;
-      state.imageStyles.height = payload.height;
+
+    components (state, payload) {
+      state.components.push(payload.component)
     },
-
-    updateImgStyleDrag(state,payload){
-      state.imageStyles.moveX = payload.moveX;
-      state.imageStyles.moveY = payload.moveY;
-    },*/
-
     updateTextStyleResize (state, payload) {
         state.switchElement.forEach(item => {
           if(item.active == true){
@@ -176,7 +145,6 @@ export default new Vuex.Store({
           }
         })
     },
-
     updateTextStyleDrag (state, payload) {
       //位置变化
       for (let i of state.selectedComponents) {
@@ -186,9 +154,19 @@ export default new Vuex.Store({
         }
       }
     },
-
-    components (state, payload) {
-      state.components.push(payload.component)
+    //右侧属性值改变时，修改组件属性
+    changeAttr(state,payload){
+      payload.selectedId.forEach(ele =>{
+        state.switchElement.forEach(item => {
+          if(payload.selectedId.indexOf(item.id) != -1){
+            item.style[payload.attr] = payload.value
+          }
+        })
+      })
+    },
+    // 保存编辑放大倍数
+    scaleVal(state,payload){
+      state.scaleVal = payload;
     }
   },
   actions: {

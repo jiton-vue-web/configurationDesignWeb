@@ -1,18 +1,67 @@
 <template>
   <div>
     <div class="title-style">{{$t('message.style')}}</div>
-    <component :is="boxType" :obj="obj"></component>
+    <el-form :model="arrObj" label-position="left" label-width="80px" class="formStyle">
+        <el-form-item :label="item.label" v-for="(item,index) in arrObj" :key="index">
+            <el-input 
+              v-if="item.component == 'input'" 
+              v-model="item.value" 
+              placeholder="请输入内容" 
+              :type="item.inputType" 
+              @change="changeAttr(item.attr,item.value)">
+            </el-input>
+
+            <el-input-number  
+              v-if="item.component == 'inputNumber'" 
+              v-model="item.value" 
+              :min="item.min"  
+              :disabled="item.disabled" 
+              :step="item.step"
+              :controls-position="item.position"
+              :precision="item.precision"
+              @change="changeAttr(item.attr,item.value)"
+            ></el-input-number>
+
+            <el-select 
+              v-if="item.component == 'select'" 
+              v-model="item.value" 
+              placeholder="请选择" 
+              @change="changeAttr(item.attr,item.value)">
+                <el-option
+                  v-for="item in item.options"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+            </el-select>
+
+            <el-color-picker 
+              v-if="item.component == 'colorPicker'" 
+              v-model="item.value" 
+              show-alpha
+              @change="changeAttr(item.attr,item.value)"
+            ></el-color-picker>
+
+        </el-form-item>
+        <!-- <el-form-item>
+            <el-button type="primary" @click="onSubmit">提交</el-button>
+        </el-form-item> -->
+        <input type="hidden" :value="obj"/>
+    </el-form>
   </div>
 </template>
 
 <script>
   import {mapState} from 'vuex'
+  import str from './../../static/json/label.js'
   
   export default {
     name: 'EditorStyle',
     data () {
       return {
-        boxType:""
+          showForm:false,
+          arrObj:{},
+          selectedId:[]
       }
     },
     created () {
@@ -23,25 +72,60 @@
     },
     computed: {
         obj() {
+            let _this = this;
+
             let seletedComponent = this.$store.getters.getSelectedStatus;
-            // 如果已选已为零，判断所有组件为零则清空右侧属性界面
-            if(seletedComponent.length == 0){
-              let allObj = this.$store.getters.getAllComponents;
-              if(allObj.length == 0){
-                this.boxType = "";
-              }
+            let allObj = this.$store.getters.getAllComponents;
+
+            // 所有组件为零,则为删除所有组件，清空右侧属性界面
+            if(allObj.length == 0){
+                _this.arrObj = {}
             }
-            //只有一个已选中，直接显示已定义好的各个类型组件模板
-            if(seletedComponent.length == 1){
-              this.boxType = ()=> import('./attrComponents/'+ seletedComponent[0].type +'.vue');
-              return seletedComponent[0].style;
+            // 单选的时候
+            if(seletedComponent.length == 0 && allObj.length == 1 || seletedComponent.length == 1 ){
+                let obj = seletedComponent.length == 1?seletedComponent[0] : allObj[0]
+                _this.selectedId.length = [];
+                _this.selectedId.push(obj.id);
+
+                _this.arrObj = {};
+                let ele = obj.style;
+
+                for(var i in ele){
+                  str[i].value = ele[i];
+                  this.$set(_this.arrObj,i,str[i])
+                }
             }
 
-            //多个已选中，判断哪些属性为所有组件共同属性，存为style对象，传入子组件显示
+            //多选，判断哪些属性为所有组件共同属性，存为style对象，传入子组件显示
+            if(seletedComponent.length>1){
+                _this.arrObj = {}
+                _this.selectedId.length = [];
+                _this.selectedId.push(seletedComponent[0].id);
+                let arr = [];
+                //第一个选中元素属性为参照
+                let sameAttr = Object.keys(seletedComponent[0].style);
+                for(let i = 1, len = seletedComponent.length; i<len;i++){
+                    _this.selectedId.push(seletedComponent[i].id);
+                    let eleAttr = Object.keys(seletedComponent[i].style);
+                    arr = eleAttr.filter(function(v){
+                        return sameAttr.indexOf(v)!==-1 
+                    })
+                    sameAttr = arr;
+                }
+                arr.forEach(item =>{
+                   this.$set(_this.arrObj,item,str[item])
+                })
+            }
 
         }
     },
-    methods: {}
+    methods: {
+      // 更改属性 changeAttr
+      changeAttr(attr,value){
+        console.log(this.selectedId)
+        this.$store.commit('changeAttr',{attr:attr,value:value,selectedId:this.selectedId}) 
+      }
+    }
   }
 </script>
 
@@ -56,7 +140,8 @@
     padding-left: 15px;
   }
 
-  .padding-2 {
-    padding: 20px;
+  .formStyle{
+    height:calc(100vh - 110px);
+    padding:0 20px;
   }
 </style>

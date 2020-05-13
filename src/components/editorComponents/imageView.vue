@@ -1,7 +1,7 @@
 <template>
     <div class="imgBox">
         <img :src="imgsrc" class="imgStyle" />
-        {{obj.id}}
+        <!-- {{obj.id}} -->
     </div>
    
 </template>
