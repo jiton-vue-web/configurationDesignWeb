@@ -7,11 +7,11 @@
     @resizing="(x,y,w,h) => onResize(x,y,w,h, type)"
     @dragging="onDragging"
     @activated="onActivated"
-    @deactivated ="onDeactivated"
+    @deactivated="onDeactivated"
     :id="detail.id"
     :active="active"
     :parent="true"
-    :is-conflict-check="true"
+    :is-conflict-check="false"
     :snap="true"
     :snap-tolerance="20"
     @refLineParams="getRefLineParams"
@@ -116,7 +116,6 @@
       onDragging (x,y) {
         let arr = this.$store.getters.getSelectedStatus;
         let _this = this;
-        
         //如果是多选拖拽
         if(arr.length >1){
           let viewZone = this.$store.getters.getViewZoneInfor;
@@ -196,16 +195,6 @@
         this.active = val.ifActive;       
       }
     },
-    // computed: {
-    //   ContentItem () {
-    //     let com = this.$store.state.components
-    //     for (let i of com) {
-    //       if (this.$store.state.switchElement == i.type) {
-    //         return i.style
-    //       }
-    //     }
-    //   },
-    // },
     mounted () {
         this.active = this.detail.active
     }

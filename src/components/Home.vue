@@ -1,25 +1,34 @@
 <template>
   <div>
-    <el-container>
+    <el-container tabindex="1">
       <el-header>
         <el-row style="line-height: 68px;">
-          <el-button size="mini" plain @click="setLeftOrTop(0)">
+          <el-button  plain @click="setLeftOrTop(0)">
             <i class="iconfont icon-jurassic-left"></i>
           </el-button>
-          <el-button size="mini" plain @click="setRightOrBottom(0)">
+          <el-button  plain @click="setRightOrBottom(0)">
             <i class="iconfont icon-jurassic-right"></i>
           </el-button>
-          <el-button size="mini" plain @click="setRightOrBottom(1)">
+          <el-button  plain @click="setRightOrBottom(1)">
             <i class="iconfont icon-jurassic-bottom"></i>
           </el-button>
-          <el-button size="mini" plain @click="setLeftOrTop(1)">
+          <el-button  plain @click="setLeftOrTop(1)">
             <i class="iconfont icon-jurassic-top"></i>
           </el-button>
-          <el-button size="mini" plain @click="setCenterOrMiddle(0)">
+          <el-button  plain @click="setCenterOrMiddle(0)">
             <i class="iconfont icon-jurassic_horizalign-center"></i>
           </el-button>
-          <el-button size="mini" plain @click="setCenterOrMiddle(1)">
+          <el-button  plain @click="setCenterOrMiddle(1)">
             <i class="iconfont icon-jurassic_verticalalign-center"></i>
+          </el-button>
+          <el-button  plain @click="ctrlZEvent()">
+            <i class="el-icon-back inconStyle" ></i>
+          </el-button>
+          <el-button  plain @click="openData()">
+            <i class="el-icon-folder-opened inconStyle"></i>
+          </el-button>
+          <el-button  plain @click="save()">
+            <i class="el-icon-folder-checked inconStyle"></i>
           </el-button>
         </el-row>
         <el-dropdown size="medium" split-button type="primary" @command="switchLang" class="res-btn">
@@ -35,7 +44,7 @@
           <basic-list></basic-list>
         </el-aside>
         <el-main>
-          <dra-res id="zone"></dra-res>
+          <dra-res id="zone" style="height:100%;width:100%;"></dra-res>
         </el-main>
         <el-aside>
           <editor-style></editor-style>
@@ -240,6 +249,32 @@
         })
 
         return Math.min(...distanceArr)
+      },
+      ctrlZEvent(){
+        this.$store.commit('preState');
+      },
+      saveData(e){
+         console.log("Ctrl + S")
+          //Ctrl + S
+          debugger;
+          if(e.ctrlKey && e.keyCode === 83){
+            console.log("Ctrl + S")
+            this.save();
+            e.preventDefault();  
+            return false;
+          }
+      },
+      //保存已有数据
+      save(){
+        this.$store.commit('saveData');
+        this.$message({
+          message: '保存成功',
+          type: 'success'
+        });
+      },
+      //打开保存的数组
+      openData(){
+          this.$store.commit('showData');
       }
     },
     computed: {},
@@ -251,7 +286,7 @@
 <style scoped>
   .el-header, .el-footer {
     position: relative;
-    background-color: #2080d1;
+    background-color: #333;
     color: #333;
     line-height: 60px;
   }
@@ -289,5 +324,10 @@
     /*align-items: center;*/
     /*justify-content: center;*/
     margin-top: 60px;
+  }
+
+  .inconStyle{
+    font-weight: bold;
+    font-size: 16px;
   }
 </style>

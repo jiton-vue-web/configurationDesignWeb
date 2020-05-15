@@ -2,7 +2,7 @@
   <div>
    
     <div id="dragArea" class="page" @mousedown="createBlock" @mouseup="stopBlock" @mousewheel="scaleFun($event)" :style="{transform:`scale(${scale})`}">
-      <div @drop="onDropText($event)" @dragover.prevent @keyup.delete="del($event)" tabindex="1" class="editorBox">
+      <div @drop="onDropText($event)" @dragover.prevent @keyup="keyboardEvent($event)" tabindex="1" class="editorBox">
         <view-text 
           v-for="(item,index) in modulesText" 
           :key="index" 
@@ -29,11 +29,8 @@
 
     </div>
 
-     <div class="sliderStyle">
-      <!-- <span ><el-slider v-model="scale" :min="0.1" :max="5"></el-slider></span>
-      <span style="float:right;">放缩比：{{scaleVal + "%"}}</span> -->
-       <el-slider v-model="scaleVal" :min="10" :max="500" :step="20" show-input> %
-    </el-slider>
+    <div class="sliderStyle">
+       <el-slider v-model="scaleVal" :min="20" :max="300" :step="20" show-input @input="changeVal" :format-tooltip="formatTooltip"></el-slider>
     </div>
     
   </div>
@@ -59,6 +56,8 @@
         blockBox:{},
         scale:1,
         scaleVal:100,
+        divW:`100%`,
+        divH:`100%`
       }
     },
     created(){
@@ -79,16 +78,47 @@
      
     },
     methods: {
-      del(e){
-         if(e.code == "Delete"){
-          this.$store.commit('removeComponents')
-        }
+      //键盘响应快捷键
+      keyboardEvent(e){
+
+          // Delete
+          if(e.code == "Delete"){
+            this.$store.commit('removeComponents');
+          }
+          //Ctrl + C
+          if(e.ctrlKey && e.keyCode === 67){
+            console.log("Ctrl + C")
+            this.$store.commit('copyComponents');
+          }
+          //Ctrl + V
+          if(e.ctrlKey && e.keyCode === 86){
+            console.log("Ctrl + V")
+            this.$store.commit('pasteComponents');
+          }
+
+          //Ctrl + Z
+          if(e.ctrlKey && e.keyCode === 90){
+            console.log("Ctrl + Z")
+            this.$store.commit('preState');
+          }
+
+          //Ctrl + S
+          // if(e.ctrlKey && e.keyCode === 83){
+          //   // this.$store.commit('saveData');
+          //   // this.$message({
+          //   //   message: '保存成功',
+          //   //   type: 'success'
+          //   // });
+          //   console.log("Ctrl + S")
+          //   return false;
+          // }
       },
       getRefLineParams (params) {
         const {vLine, hLine} = params
         this.vLine = vLine
         this.hLine = hLine
       },
+      
       //第一次加入编辑区
       onDropText (event) {
         event.preventDefault()
@@ -196,30 +226,25 @@
       remove () {
         this.modulesImage = {}
       },
-      // handlActivate (obj) {
-      //   console.log("211111")
-      //   this.$store.commit('switchStatus', obj)
-      // },
-      // textRemove (id) {
-      //   let items = this.$store.state.switchElement
-      //   for (let i in items) {
-      //     if (items[i].id === id) {
-      //       items.splice(i, 1)
-      //     }
-      //   }
-      // },
+      formatTooltip(val) {
+        return val + "%";
+      },
+      changeVal(val){
+         this.scale = this.accDiv(val,100);
+      },
       scaleFun(e){
         var _this = this;
-        if(e.ctrlKey && _this.scale > 0.1 && _this.scale <5) {
+        if(e.ctrlKey && _this.scale > 0.2 && _this.scale <3) {
           var direction = e.deltaY>0?'down':'up';
-          
           if(direction == "down"){
             _this.scale = _this.accSub(_this.scale, 0.2);
           }else{
             _this.scale = _this.accAdd(_this.scale , 0.2);
+            // _this.divW = _this.accMul(_this.scale,viewZone.height) + "px";
+            // _this.divH = _this.accMul(_this.scale,viewZone.height) + "px";
           }
 
-         _this.scaleVal = _this.accMul(_this.scale,100)
+         _this.scaleVal = _this.accMul(_this.scale,100);
         }
       },
        // 两个浮点数求和
@@ -236,7 +261,6 @@
             r2=0;
         }
         m=Math.pow(10,Math.max(r1,r2));
-        // return (num1*m+num2*m)/m;
         return Math.round(num1*m+num2*m)/m;
       },
       // 两个浮点数相减
@@ -256,13 +280,31 @@
         let n=(r1>=r2)?r1:r2;
         return Number((Math.round(num1*m-num2*m)/m).toFixed(n));
       },
+      // 两个浮点数相乘
       accMul(num1,num2){
           var m=0,s1=num1.toString(),s2=num2.toString(); 
           try{m+=s1.split(".")[1].length}catch(e){};
           try{m+=s2.split(".")[1].length}catch(e){};
           return Number(s1.replace(".",""))*Number(s2.replace(".",""))/Math.pow(10,m);
-          }
       },
+      // 两个浮点数相除
+      accDiv(num1,num2){
+          var t1,t2,r1,r2;
+          try{
+              t1 = num1.toString().split('.')[1].length;
+          }catch(e){
+              t1 = 0;
+          }
+          try{
+              t2=num2.toString().split(".")[1].length;
+          }catch(e){
+              t2=0;
+          }
+          r1=Number(num1.toString().replace(".",""));
+          r2=Number(num2.toString().replace(".",""));
+          return (r1/r2)*Math.pow(10,t2-t1);
+        }
+    },
     computed: {
       modulesText(){
         return this.$store.getters.getAllComponents;
@@ -275,9 +317,10 @@
 </script>
 <style>
   .page {
-    height: calc(100vh - 90px);
+    height: 100%;
     width: 100%;
-    background-color:#fff;
+    background-color:rgba(234, 159, 159, 0.2);
+    /* background-color:#f5f5f5; */
     box-sizing: content-box;
     position: relative;
     transform-origin:0 0 0;
@@ -297,12 +340,14 @@
   .editorBox{
       height:100%;
       width: 100%;
+      transform-origin:0 0 0;
   }
 
   .sliderStyle{
-    width:300px;
+    width:310px;
     position: fixed;
-    bottom:30px;
+    bottom:50px;
+    right:350px;
   }
 
 </style>

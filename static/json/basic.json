@@ -54,7 +54,8 @@
           "url": ""
         }
       }
-    },
+    }
+    ,
     {
       "text": "Button",
       "icon": "el-icon-open",

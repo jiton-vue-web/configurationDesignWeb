@@ -138,18 +138,7 @@ const obj = {
         component:'input',
         disabled:false
     },
-    "borderRadius":{
-        attr:"borderRadius",
-        label:'圆角',
-        component:'inputNumber',
-        precision:0,
-        value:15,
-        step:10,
-        // min:0,
-        // max:10,
-        position:'right',
-        disabled:false
-    }
+    
 }
 
 export default obj;

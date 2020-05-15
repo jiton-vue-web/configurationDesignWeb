@@ -51,7 +51,6 @@
     color: #ffffff;
     background-color: #4a4944;
     text-align: left;
-    border: 1px solid #B3C0D1;
     padding-left: 15px;
   }
 

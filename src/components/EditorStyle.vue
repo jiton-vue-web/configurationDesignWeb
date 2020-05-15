@@ -71,58 +71,71 @@
 
     },
     computed: {
-        obj() {
-            let _this = this;
+      obj() {
+          let _this = this;
+          let seletedComponent = this.$store.getters.getSelectedStatus;
+          let allObj = this.$store.getters.getAllComponents;
+          console.log(allObj)
+          // 所有组件为零,则为删除所有组件，清空右侧属性界面
+          if(allObj.length == 0 ){
+              _this.arrObj = {}
+          }
+          // 单选的时候
+          if(seletedComponent.length == 1 || seletedComponent.length == 0 && allObj.length == 1){
+              let obj = seletedComponent.length == 1?seletedComponent[0] : allObj[0]
+              _this.selectedId.length = [];
+              _this.selectedId.push(obj.id);
+              _this.arrObj = {};
+              let ele = obj.style;
 
-            let seletedComponent = this.$store.getters.getSelectedStatus;
-            let allObj = this.$store.getters.getAllComponents;
-
-            // 所有组件为零,则为删除所有组件，清空右侧属性界面
-            if(allObj.length == 0){
-                _this.arrObj = {}
-            }
-            // 单选的时候
-            if(seletedComponent.length == 0 && allObj.length == 1 || seletedComponent.length == 1 ){
-                let obj = seletedComponent.length == 1?seletedComponent[0] : allObj[0]
-                _this.selectedId.length = [];
-                _this.selectedId.push(obj.id);
-
-                _this.arrObj = {};
-                let ele = obj.style;
-
-                for(var i in ele){
-                  str[i].value = ele[i];
-                  this.$set(_this.arrObj,i,str[i])
+              for(var i in ele){
+                let attrObj = {};
+                for(var k in str[i]){
+                  attrObj[k] = str[i][k];
                 }
-            }
+                attrObj.value = ele[i];
+                this.$set(_this.arrObj,i,attrObj)
+              }
+          }
 
-            //多选，判断哪些属性为所有组件共同属性，存为style对象，传入子组件显示
-            if(seletedComponent.length>1){
-                _this.arrObj = {}
-                _this.selectedId.length = [];
-                _this.selectedId.push(seletedComponent[0].id);
-                let arr = [];
-                //第一个选中元素属性为参照
-                let sameAttr = Object.keys(seletedComponent[0].style);
-                for(let i = 1, len = seletedComponent.length; i<len;i++){
-                    _this.selectedId.push(seletedComponent[i].id);
-                    let eleAttr = Object.keys(seletedComponent[i].style);
-                    arr = eleAttr.filter(function(v){
-                        return sameAttr.indexOf(v)!==-1 
-                    })
-                    sameAttr = arr;
+          //多选，判断哪些属性为所有组件共同属性，存为style对象，传入子组件显示
+          if(seletedComponent.length>1){
+              _this.arrObj = {}
+              _this.selectedId.length = [];
+              _this.selectedId.push(seletedComponent[0].id);
+              let arr = []; //存储共同属性
+              //第一个选中元素属性为参照
+              let sameAttr = Object.keys(seletedComponent[0].style);
+              for(let i = 1, len = seletedComponent.length; i<len;i++){
+                  _this.selectedId.push(seletedComponent[i].id);
+                  let eleAttr = Object.keys(seletedComponent[i].style);
+                  arr = eleAttr.filter(function(v){
+                      return sameAttr.indexOf(v)!==-1 
+                  })
+                  sameAttr = arr;
+              }
+              
+              let arrtData = {};
+              
+              for(var k = 0 ,lenK = sameAttr.length; k<lenK; k++){
+                  let attrArray = []
+                  for(var i = 0, len = seletedComponent.length; i<len; i++){
+                    attrArray.push(seletedComponent[i].style[sameAttr[k]])
+                 }
+
+                 attrArray = Array.from(new Set(attrArray));
+
+                if(attrArray.length == 1){
+                  str[sameAttr[k]].value = attrArray[0];
                 }
-                arr.forEach(item =>{
-                   this.$set(_this.arrObj,item,str[item])
-                })
-            }
-
-        }
+                this.$set(_this.arrObj,sameAttr[k],str[sameAttr[k]])
+              }
+          }
+      }
     },
     methods: {
-      // 更改属性 changeAttr
+      // 更改属性
       changeAttr(attr,value){
-        console.log(this.selectedId)
         this.$store.commit('changeAttr',{attr:attr,value:value,selectedId:this.selectedId}) 
       }
     }

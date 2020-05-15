@@ -1,7 +1,6 @@
 <template>
     <div class="imgBox">
         <img :src="imgsrc" class="imgStyle" />
-        <!-- {{obj.id}} -->
     </div>
    
 </template>
