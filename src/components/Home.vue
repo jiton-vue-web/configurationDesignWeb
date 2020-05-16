@@ -2,35 +2,61 @@
   <div>
     <el-container tabindex="1">
       <el-header>
-        <el-row style="line-height: 68px;">
-          <el-button  plain @click="setLeftOrTop(0)">
+        <el-row class="navStyle">
+          <div @click="setLeftOrTop(0)">
             <i class="iconfont icon-jurassic-left"></i>
-          </el-button>
-          <el-button  plain @click="setRightOrBottom(0)">
+            <div class="iconText">左对齐</div>
+          </div>
+          <div @click="setRightOrBottom(0)">
             <i class="iconfont icon-jurassic-right"></i>
-          </el-button>
-          <el-button  plain @click="setRightOrBottom(1)">
+            <div class="iconText">右对齐</div>
+          </div>
+          <div @click="setRightOrBottom(1)">
             <i class="iconfont icon-jurassic-bottom"></i>
-          </el-button>
-          <el-button  plain @click="setLeftOrTop(1)">
+            <div class="iconText">下对齐</div>
+          </div>
+          <div @click="setLeftOrTop(1)">
             <i class="iconfont icon-jurassic-top"></i>
-          </el-button>
-          <el-button  plain @click="setCenterOrMiddle(0)">
+            <div class="iconText">上对齐</div>
+          </div>
+          <div @click="setCenterOrMiddle(0)">
             <i class="iconfont icon-jurassic_horizalign-center"></i>
-          </el-button>
-          <el-button  plain @click="setCenterOrMiddle(1)">
+            <div class="iconText">水平对齐</div>
+          </div>
+          <div @click="setCenterOrMiddle(1)">
             <i class="iconfont icon-jurassic_verticalalign-center"></i>
-          </el-button>
-          <el-button  plain @click="ctrlZEvent()">
+            <div class="iconText">垂直对齐</div>
+          </div>
+          <div @click="ctrlZEvent()">
             <i class="el-icon-back inconStyle" ></i>
-          </el-button>
-          <el-button  plain @click="openData()">
+            <div class="iconText">撤销</div>
+          </div>
+          <div @click="openData()">
             <i class="el-icon-folder-opened inconStyle"></i>
-          </el-button>
-          <el-button  plain @click="save()">
+            <div class="iconText">打开</div>
+          </div>
+          <div @click="save()">
             <i class="el-icon-folder-checked inconStyle"></i>
-          </el-button>
+            <div class="iconText">保存</div>
+          </div>
+          <div @click="lockElement()">
+            <i class="el-icon-circle-close inconStyle"></i>
+            <div class="iconText">锁定</div>
+          </div>
+          <div @click="unLockElement()">
+            <i class="el-icon-circle-check inconStyle"></i>
+            <div class="iconText">解除锁定</div>
+          </div>
+          <div>
+            <el-switch
+              active-color="#13ce66"
+              v-model="value">
+            </el-switch>
+            <div class="iconText">描图模式</div>
+          </div>
+          
         </el-row>
+        
         <el-dropdown size="medium" split-button type="primary" @command="switchLang" class="res-btn">
           选择语言
           <el-dropdown-menu slot="dropdown">
@@ -45,6 +71,7 @@
         </el-aside>
         <el-main>
           <dra-res id="zone" style="height:100%;width:100%;"></dra-res>
+          <DrawLayers class="drawLayers" v-show="value"></DrawLayers>
         </el-main>
         <el-aside>
           <editor-style></editor-style>
@@ -58,20 +85,25 @@
   import DraRes from './DraRes'
   import EditorStyle from './EditorStyle'
   import BasicList from './BasicList'
-  import ViewText from './ViewText'
-  import ViewImage from './ViewImage'
+  import DrawLayers from './drawLayers'
+
+  // drawLayers
+  // import ViewText from './ViewText'
+  // import ViewImage from './ViewImage'
 
   export default {
     components: {
       DraRes,
       EditorStyle,
       BasicList,
-      ViewText,
-      ViewImage
+      // ViewText,
+      // ViewImage
+      DrawLayers
     },
     data: function () {
       return {
         lists: {},
+        value:false,
       }
     },
     created () {
@@ -256,7 +288,6 @@
       saveData(e){
          console.log("Ctrl + S")
           //Ctrl + S
-          debugger;
           if(e.ctrlKey && e.keyCode === 83){
             console.log("Ctrl + S")
             this.save();
@@ -272,9 +303,17 @@
           type: 'success'
         });
       },
-      //打开保存的数组
+      //显示保存的数据
       openData(){
           this.$store.commit('showData');
+      },
+      //锁定元素
+      lockElement(){
+          this.$store.commit('lockElement');
+      },
+      //解除元素锁定
+      unLockElement(){
+          this.$store.commit('unLockElement');
       }
     },
     computed: {},
@@ -288,7 +327,6 @@
     position: relative;
     background-color: #333;
     color: #333;
-    line-height: 60px;
   }
 
   .el-aside {
@@ -317,6 +355,7 @@
      border:1px solid #ccc;
      padding:0;
      margin:15px;
+     position: relative;
   }
 
   .flex-box {
@@ -330,4 +369,45 @@
     font-weight: bold;
     font-size: 16px;
   }
+
+  .navStyle{
+      display:flex;
+      margin-top:5px;
+  }
+
+  .navStyle>div{
+      padding:0 15px;
+      color:#ccc;
+      font-size: 24px;
+      font-weight:100;
+  }
+
+  
+
+  .navStyle div i{
+      font-size: 24px;
+      font-weight:100;
+  }
+
+  .navStyle div.iconText{
+    font-size: 12px;
+  }
+
+   .navStyle div:hover{
+      color:#fff;
+  }
+
+  .drawLayers{
+    height:100%;
+    width:100%;
+    position: absolute;
+    z-index:9999;
+    background:rgba(0,0,0,.35);
+    top:0;
+    left:0;
+  }
+
+
+
+
 </style>

@@ -9,6 +9,8 @@
           :type="item.type"
           :detail="item"
           @getRefLineParams="getRefLineParams"
+          :class="{disableStyle:item.disabled}"
+          :style="{transform:'rotate('+item.style.rotate+'deg)'}"
            >
         </view-text>
         <div id="bgBlock"></div>
@@ -128,24 +130,17 @@
         console.log(position)
         console.log("多位小数")
 
-        this.$store.commit('viewZoneInfor', position) 
+        this.$store.commit('viewZoneInfor', position);
+
         console.log(position)
           let infoJson = event.dataTransfer.getData('my-info')
           if(infoJson != ""){
+              // this.$store.commit('saveCopyArr'); //通知复制副本
               this.itemText = JSON.parse(infoJson)
               this.itemText.style.x = event.clientX - position.x;
               this.itemText.style.y = event.clientY - position.y;
               this.itemText.id = (Math.random()*10000000).toString(16).substr(0,4);
-              let component = this.itemText;
-
-              let obj= {
-                id:component.id,
-                style:component.style,
-                type:component.type,
-                active:true
-                }
-
-              this.$store.commit('selectedStatus', [obj])   
+              this.$store.commit('selectedStatus', [this.itemText])   
           }
       },
       createBlock(e) {
@@ -213,7 +208,7 @@
           let objArr = [];
           items.forEach(item => {
             if (Math.abs((obj.left + obj.width) - (item.style.x + item.style.w)) + Math.abs(obj.left - item.style.x) < (obj.width + item.style.w) &&
-                Math.abs((obj.top + obj.height) - (item.style.y + item.style.h)) + Math.abs(obj.top - item.style.y) < (obj.height + item.style.h)) { 
+                Math.abs((obj.top + obj.height) - (item.style.y + item.style.h)) + Math.abs(obj.top - item.style.y) < (obj.height + item.style.h) && item.disabled == false) { 
                     item.active = true;
                     objArr.push(item)
                 }
@@ -349,5 +344,11 @@
     bottom:50px;
     right:350px;
   }
+
+   .disableStyle{
+    cursor: not-allowed;
+    pointer-events: none; /*禁止鼠标点击事件*/
+  }
+
 
 </style>

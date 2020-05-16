@@ -3,56 +3,44 @@
   "icon": "icon-jichushezhi",
   "opened": false,
   "items": [
-    {
+ {
       "text": "Text",
       "icon": "el-icon-tickets",
       "isFontIcon": true,
-      "info": {
-        "type": "text",
-        "action": [],
-        "dataBind": {
-          "sn": "",
-          "title": "",
-          "biz": "",
-          "queryParam": {}
-        },
-        "style": {
-            "x": 50,
-            "y": 50,
-            "w": 100,
-            "h": 50,
-          "backColor": "rgba(0,0,0,0)",
-          "color": "#333",
-          "zIndex": 1,
-          "text": "Text",
-          "textAlign": "center",
-          "fontSize": 16,
-          "lineHeight": 1.25
-        }
+      "type": "text",
+      "disabled":false,
+      "active":true,
+      "style": {
+          "x": 50,
+          "y": 50,
+          "w": 100,
+          "h": 50,
+        "backColor": "rgba(0,0,0,0)",
+        "color": "#333",
+        "zIndex": 1,
+        "text": "Text",
+        "textAlign": "center",
+        "fontSize": 16,
+        "lineHeight": 1.25,
+        "rotate":0
       }
     },
     {
       "text": "Image",
       "icon": "el-icon-picture-outline",
       "isFontIcon": true,
-      "info": {
-        "type": "image",
-        "action": [],
-        "dataBind": {
-          "sn": "",
-          "title": "",
-          "biz": "",
-          "queryParam": {}
-        },
-        "style": {
-            "x": 100,
-            "y": 100,
-            "w": 100,
-            "h": 100,
-          "backColor": "rgba(0,0,0,0)",
-          "zIndex": 1,
-          "url": ""
-        }
+      "type": "image",
+      "disabled":false,
+      "active":true,
+      "style": {
+          "x": 100,
+          "y": 100,
+          "w": 100,
+          "h": 100,
+        "backColor": "rgba(0,0,0,0)",
+        "zIndex": 1,
+        "url": "",
+        "rotate":0
       }
     }
     ,
@@ -60,28 +48,22 @@
       "text": "Button",
       "icon": "el-icon-open",
       "isFontIcon": true,
-      "info": {
-        "type": "button",
-        "action": [],
-        "dataBind": {
-          "sn": "",
-          "title": "",
-          "biz": "",
-          "queryParam": {}
-        },
-        "style": {
-            "x": 100,
-            "y": 100,
-            "w": 100,
-            "h": 50,
-          "backColor": "rgba(196, 83, 83, 0.81)",
-          "zIndex": 1,
-          "borderRadius": "15",
-          "lineHeight": 1.25,
-          "text": "Button",
-          "color": "#333",
-          "fontSize": 16
-        }
+      "type": "button",
+      "disabled":false,
+      "active":true,
+      "style": {
+          "x": 100,
+          "y": 100,
+          "w": 100,
+          "h": 50,
+        "backColor": "rgba(196, 83, 83, 0.81)",
+        "zIndex": 1,
+        "borderRadius": "15",
+        "lineHeight": 1.25,
+        "text": "Button",
+        "color": "#333",
+        "fontSize": 16,
+        "rotate":0
       }
     }
   ]

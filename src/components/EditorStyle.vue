@@ -70,18 +70,22 @@
     mounted () {
 
     },
-    computed: {
+    computed:{
+      allComponents(){
+        return this.$store.getters.getAllComponents;
+      },
       obj() {
           let _this = this;
           let seletedComponent = this.$store.getters.getSelectedStatus;
-          let allObj = this.$store.getters.getAllComponents;
+          let allObj = this.allComponents;
           console.log(allObj)
           // 所有组件为零,则为删除所有组件，清空右侧属性界面
-          if(allObj.length == 0 ){
+          if(allObj.length == 0 || seletedComponent.length == 0){
               _this.arrObj = {}
           }
           // 单选的时候
-          if(seletedComponent.length == 1 || seletedComponent.length == 0 && allObj.length == 1){
+          // if(seletedComponent.length == 1 || seletedComponent.length == 0 && allObj.length == 1){
+          if(seletedComponent.length == 1 ){        
               let obj = seletedComponent.length == 1?seletedComponent[0] : allObj[0]
               _this.selectedId.length = [];
               _this.selectedId.push(obj.id);

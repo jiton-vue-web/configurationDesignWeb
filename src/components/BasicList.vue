@@ -35,8 +35,8 @@
 
     },
     methods:{
-      onDragstart(event, info){
-        let infoJson = JSON.stringify(info.info);
+      onDragstart(event, value){
+        let infoJson = JSON.stringify(value);
         event.dataTransfer.setData('my-info', infoJson);
       },
 

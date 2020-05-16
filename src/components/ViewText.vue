@@ -1,7 +1,6 @@
 <template>
   <vue-draggable-resizable
     class="draText"
-    :class="{pointStyle:active}"
     :onDragStart="onDragStartCallback"
     @dragstop="(x,y) => onDrag(x,y, type)"
     @resizing="(x,y,w,h) => onResize(x,y,w,h, type)"
@@ -21,7 +20,7 @@
     :h="detail.style.h">
     <div @keyup.delete="del($event)" tabindex="1" v-focus style="display:flex;width:100%">
       <!-- 编辑区加载不同组件的地方，以下 -->    
-       <component :is="viewZoneComponent" :obj="detail"></component>
+       <component :is="viewZoneComponent" :obj="detail" ></component>
       <!-- 编辑区加载不同组件的地方，以上-->
     </div>
   </vue-draggable-resizable>
@@ -106,11 +105,11 @@
       },
       //点击元素外任何地方的时候执行
       onDeactivated(){
-         let arr = this.$store.getters.getSelectedStatus;
-         //已选只有单个元素的时候清空已选数组
-         if(arr.length == 1 && !event.ctrlKey){
-            this.$store.commit('selectedStatus', [])
-         }
+          //  let arr = this.$store.getters.getSelectedStatus;
+          //已选只有单个元素的时候清空已选数组
+          //  if(arr.length == 1 && !event.ctrlKey){
+          //     this.$store.commit('selectedStatus', [])
+          //  }
       },
        //被拖动的时候执行
       onDragging (x,y) {
@@ -142,15 +141,16 @@
           })
           this.$store.commit('selectedStatus', arr) 
         }else{
-            let obj = { 
-              id:this.detail.id,
-              type:this.detail.type,
-              style:this.detail.style,
-              active:true
-            };
+
+            let detailObj = this.detail;
+            let obj = {}
+            for(var i in detailObj){
+                obj[i] = detailObj[i];
+            }
 
             obj.style.x = x;
             obj.style.y = y;
+            obj.active = true;
 
             this.$store.commit('selectedStatus', [obj]) 
         }
@@ -160,12 +160,14 @@
       onActivated (id) {
         //按下ctrl键
         if(event.ctrlKey){
-          let obj = { 
-              id:this.detail.id,
-              type:this.detail.type,
-              style:this.detail.style,
-              active:true
-            };
+          let detailObj = this.detail;
+          let obj = {}
+          for(var i in detailObj){
+              obj[i] = detailObj[i];
+          }
+
+          obj.active = true;
+
           this.$store.commit('addSelectedStatus', obj) 
 
         }else{
@@ -179,12 +181,19 @@
           
           //点击的元素不属于框选元素的时候执行
           if(!flag){
-              let obj = { 
-                  id:this.detail.id,
-                  type:this.detail.type,
-                  style:this.detail.style,
-                  active:true
-                };
+              // let obj = { 
+              //     id:this.detail.id,
+              //     type:this.detail.type,
+              //     style:this.detail.style,
+              //     active:true
+              //   };
+              let detailObj = this.detail;
+              let obj = {}
+              for(var i in detailObj){
+                  obj[i] = detailObj[i];
+              }
+
+              obj.active = true;
               this.$store.commit('selectedStatus', [obj]) 
           }
         }
@@ -207,7 +216,7 @@
     width: 100%;
   }
 
-  .pointStyle{
+  .draText:hover{
     cursor:move;
   }
 
@@ -215,4 +224,5 @@
     display:flex;
   }
 
+ 
 </style>

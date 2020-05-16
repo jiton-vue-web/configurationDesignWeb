@@ -60,12 +60,14 @@ export default new Vuex.Store({
 
         //所有状态设为false
         state.switchElement.forEach((element,j) =>{
-          let obj= {
-              id:element.id,
-              style:element.style,
-              type:element.type,
-              active:false
+            let detailObj = element;
+            let obj = {}
+            for(var i in detailObj){
+                obj[i] = detailObj[i];
             }
+
+            obj.active = false;
+
             arr.push(obj);
         })
 
@@ -136,6 +138,8 @@ export default new Vuex.Store({
         if(state.selectedComponents.length>1){
             state.switchElement.forEach(item => {
               if(item.active == true){
+                item.style.x = payload.x
+                item.style.y = payload.y
                 item.style.w = payload.w
                 item.style.h = payload.h
               }
@@ -144,15 +148,16 @@ export default new Vuex.Store({
           //单选赋值，匹配选中元素，赋值
           state.switchElement.forEach(item => {
             if(item.id == state.selectedComponents[0].id){
-              item.style.w = payload.w
-              item.style.h = payload.h
+                item.style.x = payload.x
+                item.style.y = payload.y
+                item.style.w = payload.w
+                item.style.h = payload.h
             }
           })
         }
 
     },
     updateTextStyleDrag (state, payload) {
-      // state.copySwitchElement = JSON.stringify(state.switchElement);
       state.switchElement.forEach(item => {
         if(item.id == payload.id){
           item.style.x = payload.x
@@ -170,6 +175,9 @@ export default new Vuex.Store({
           }
         })
       })
+    },
+    saveCopyArr(state,payload){
+      state.copySwitchElement = JSON.stringify(state.switchElement);
     },
     // 保存编辑放大倍数
     scaleVal(state,payload){
@@ -271,7 +279,26 @@ export default new Vuex.Store({
      //显示保存的数据
      showData:(state) =>{
         state.switchElement = JSON.parse(window.localStorage.getItem('graphData'));
-     }
+     },
+     //锁定元素
+     lockElement:(state) =>{
+        state.copySwitchElement = JSON.stringify(state.switchElement);
+        state.switchElement.forEach((item) =>{
+          if(item.active == true){
+             item.disabled = true;
+             item.active = false;
+          }
+        })
+     },
+     //元素锁定
+     unLockElement:(state) =>{
+      state.copySwitchElement = JSON.stringify(state.switchElement);
+      state.switchElement.forEach((item) =>{
+        if(item.disabled == true){
+           item.disabled = false;
+        }
+      })
+    }
   },
   actions: {
     reducePrice: (context, payload) => {

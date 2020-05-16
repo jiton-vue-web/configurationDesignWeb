@@ -1,6 +1,8 @@
 <template>
     <div class="imgBox">
-        <img :src="imgsrc" class="imgStyle" />
+        <img :src="imgsrc" 
+             class="imgStyle" 
+             />
     </div>
    
 </template>

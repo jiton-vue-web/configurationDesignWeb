@@ -138,6 +138,18 @@ const obj = {
         component:'input',
         disabled:false
     },
+    "rotate":{
+        attr:"rotate",
+        label:'旋转角度',
+        component:'inputNumber',
+        precision:0,
+        value:0,
+        step:10,
+        min:-360,
+        // max:10,
+        position:'right',
+        disabled:false
+    }
     
 }
 
