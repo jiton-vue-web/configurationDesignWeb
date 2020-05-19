@@ -14,7 +14,9 @@ export default new Vuex.Store({
     initialPoint:{},//框选起始点
     viewZone:{}, //放置组件的区域范围信息
     scaleVal:1,//编辑区放大倍数
-    attrObj:{} //右侧需要显示的属性信息
+    attrObj:{}, //右侧需要显示的属性信息
+    activeSvg:[],//选中的svg图形
+    allSvg:[]
   },
   getters: {
     saleProducts: (state) => {
@@ -40,6 +42,12 @@ export default new Vuex.Store({
     },
     getAttrObj:(state)=>{
       return state.attrObj;
+    },
+    getActiveSvg:(state)=>{
+      return state.activeSvg;
+    },
+    getAllSvg:(state)=>{
+      return state.allSvg;
     }
   },
   mutations: {
@@ -133,13 +141,10 @@ export default new Vuex.Store({
     updateTextStyleResize (state, payload) {
       //某个对象宽高变化
         // state.copySwitchElement = JSON.stringify(state.switchElement);
-
         //多选拖拽
         if(state.selectedComponents.length>1){
             state.switchElement.forEach(item => {
               if(item.active == true){
-                item.style.x = payload.x
-                item.style.y = payload.y
                 item.style.w = payload.w
                 item.style.h = payload.h
               }
@@ -298,6 +303,20 @@ export default new Vuex.Store({
            item.disabled = false;
         }
       })
+    },
+    addActiveSvg:(state,payload) =>{
+      let arr = []
+      state.activeSvg.forEach((item,index)=>{
+        if(item.id == payload.id){
+           arr.push(index)
+        }
+      })
+
+      if(arr.length == 0){
+        state.activeSvg.push(payload);
+      }else{
+        state.activeSvg[arr[0]] = payload;
+      }
     }
   },
   actions: {

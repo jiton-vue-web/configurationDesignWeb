@@ -53,6 +53,7 @@
         };
       },
       setPosition(obj, top, left) {
+        console.log(obj.style.top,obj.style.left)
        if(top !== -1) obj.style.top = top + 'px';
         if(left !== -1) obj.style.left = left + 'px';
       },

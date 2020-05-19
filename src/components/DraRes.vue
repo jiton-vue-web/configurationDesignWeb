@@ -16,7 +16,7 @@
         <div id="bgBlock"></div>
       </div>
 
-      <span class="ref-line v-line" 
+      <!-- <span class="ref-line v-line" 
            v-for="(item,index) in vLine" 
           :key="'vLine'+index" v-show="item.display" 
           :style="{ left: item.position, top: item.origin, height: item.lineLength}">
@@ -27,7 +27,7 @@
             :key="'hLine'+index"
             v-show="item.display"
             :style="{ top: item.position, left: item.origin, width: item.lineLength}">
-      </span>
+      </span> -->
 
     </div>
 

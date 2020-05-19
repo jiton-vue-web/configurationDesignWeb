@@ -65,17 +65,17 @@
           </el-dropdown-menu>
         </el-dropdown>
       </el-header>
-      <el-container>
+      <el-container style="position:relative;">
         <el-aside>
           <basic-list></basic-list>
         </el-aside>
         <el-main>
           <dra-res id="zone" style="height:100%;width:100%;"></dra-res>
-          <DrawLayers class="drawLayers" v-show="value"></DrawLayers>
         </el-main>
         <el-aside>
           <editor-style></editor-style>
         </el-aside>
+        <DrawLayers class="drawLayersStyle" v-show="value"></DrawLayers>
       </el-container>
     </el-container>
   </div>
@@ -103,7 +103,7 @@
     data: function () {
       return {
         lists: {},
-        value:false,
+        value:true
       }
     },
     created () {
@@ -144,7 +144,7 @@
               sortObjArr.push(obj);
           })
         
-        this.$store.commit('selectedStatus', []) 
+        // this.$store.commit('selectedStatus', []) 
       },
       //右对齐or下对齐
       setRightOrBottom(val){
@@ -174,7 +174,7 @@
               sortObjArr.push(obj);
           })
         
-        this.$store.commit('selectedStatus', []) 
+        // this.$store.commit('selectedStatus', []) 
       },
       //居中or垂直对齐，基于框选元素的最左值和最右值，最上值和最下值
       setCenterOrMiddle(val){
@@ -265,7 +265,7 @@
           console.log("数组")
           console.log(arr)
           // this.$store.commit('selectedStatus', arr) 
-          this.$store.commit('selectedStatus', []) 
+          // this.$store.commit('selectedStatus', []) 
       },
       //计算三角形斜边，用于计算选框起始点到选中元素四点之间的距离
       calcLine(pointArr){
@@ -355,7 +355,7 @@
      border:1px solid #ccc;
      padding:0;
      margin:15px;
-     position: relative;
+     /* position: relative; */
   }
 
   .flex-box {
@@ -397,14 +397,14 @@
       color:#fff;
   }
 
-  .drawLayers{
-    height:100%;
-    width:100%;
+  .drawLayersStyle{
+    width:calc(100vw - 647px);
+    height:calc(100% - 30px);
     position: absolute;
     z-index:9999;
     background:rgba(0,0,0,.35);
-    top:0;
-    left:0;
+    top:15px;
+    left:315px;
   }
 
 

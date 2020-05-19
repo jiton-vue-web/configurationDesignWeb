@@ -11,10 +11,12 @@ import store from './store/store'
 import echarts from 'echarts'
 import VueDraggableResizable from 'vue-draggable-resizable-gorkys'
 import 'vue-draggable-resizable-gorkys/dist/VueDraggableResizable.css'
+import '@/icons'
 
 
 
 Vue.component('vue-draggable-resizable',VueDraggableResizable)
+
 Vue.prototype.$echarts = echarts
 
 Vue.use(Element)

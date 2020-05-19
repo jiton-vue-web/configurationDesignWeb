@@ -1110,8 +1110,7 @@ export default {
 </script>
 <style scoped>
 .changeColor{
-    background:rgba(70, 172, 245, 0.54);
-    
+    border:1px solid rgba(70, 172, 245, 0.54);
 }
 
 .changeColor .view-text{

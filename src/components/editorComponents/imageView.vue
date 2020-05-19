@@ -29,7 +29,7 @@
 </script>
 
 <style>
-    .imgStyle{
+    .imgStyle,.imgBox{
         width:100%;
         height:100%;
     }

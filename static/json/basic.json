@@ -21,7 +21,7 @@
         "text": "Text",
         "textAlign": "center",
         "fontSize": 16,
-        "lineHeight": 1.25,
+        "lineHeight": 50,
         "rotate":0
       }
     },
