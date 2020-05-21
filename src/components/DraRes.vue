@@ -1,6 +1,5 @@
 <template>
   <div>
-   
     <div id="dragArea" class="page" @mousedown="createBlock" @mouseup="stopBlock" @mousewheel="scaleFun($event)" :style="{transform:`scale(${scale})`}">
       <div @drop="onDropText($event)" @dragover.prevent @keyup="keyboardEvent($event)" tabindex="1" class="editorBox">
         <view-text 
@@ -14,21 +13,21 @@
            >
         </view-text>
         <div id="bgBlock"></div>
-      </div>
 
-      <!-- <span class="ref-line v-line" 
-           v-for="(item,index) in vLine" 
-          :key="'vLine'+index" v-show="item.display" 
-          :style="{ left: item.position, top: item.origin, height: item.lineLength}">
-      </span>
+        <span class="ref-line v-line" 
+            v-for="(item,index) in vLine" 
+            :key="'vLine'+index" v-show="item.display" 
+            :style="{ left: item.position, top: item.origin, height: item.lineLength}">
+        </span>
 
-      <span class="ref-line h-line"
+        <span class="ref-line h-line"
             v-for="(item,index) in hLine"
             :key="'hLine'+index"
             v-show="item.display"
             :style="{ top: item.position, left: item.origin, width: item.lineLength}">
-      </span> -->
+        </span>
 
+      </div>
     </div>
 
     <div class="sliderStyle">
@@ -41,12 +40,11 @@
 <script>
   import {mapState} from 'vuex'
   import ViewText from './ViewText'
-  import ViewImage from './ViewImage'
+  import global from './common.vue'
 
   export default {
     components: {
-      ViewText,
-      ViewImage
+      ViewText
     },
     data () {
       return {
@@ -56,10 +54,8 @@
         hLine: [],
         blockObj:{},
         blockBox:{},
-        scale:1,
-        scaleVal:100,
-        divW:`100%`,
-        divH:`100%`
+        // scale:1,
+        scaleVal:100
       }
     },
     created(){
@@ -76,6 +72,19 @@
             }
         },{ passive: false});
     },
+     computed: {
+      modulesText(){
+        return this.$store.getters.getAllComponents;
+      },
+      selectdate(){
+        return this.$store.getters.getSelectedStatus;
+      },
+      scale(){
+        let scaleNum = this.$store.getters.getScaleVal;
+        this.scaleVal = global.accMul(scaleNum, 100);
+        return scaleNum;
+      }
+    },
     mounted () {
      
     },
@@ -90,7 +99,7 @@
           //Ctrl + C
           if(e.ctrlKey && e.keyCode === 67){
             console.log("Ctrl + C")
-            this.$store.commit('copyComponents');
+            this.$store.commit('setCopyComponents');
           }
           //Ctrl + V
           if(e.ctrlKey && e.keyCode === 86){
@@ -225,87 +234,18 @@
         return val + "%";
       },
       changeVal(val){
-         this.scale = this.accDiv(val,100);
+        this.$store.commit('scaleVal', global.accDiv(val,100)) 
       },
       scaleFun(e){
         var _this = this;
         if(e.ctrlKey && _this.scale > 0.2 && _this.scale <3) {
           var direction = e.deltaY>0?'down':'up';
           if(direction == "down"){
-            _this.scale = _this.accSub(_this.scale, 0.2);
+            this.$store.commit('scaleVal', global.accSub(_this.scale, 0.2))
           }else{
-            _this.scale = _this.accAdd(_this.scale , 0.2);
-            // _this.divW = _this.accMul(_this.scale,viewZone.height) + "px";
-            // _this.divH = _this.accMul(_this.scale,viewZone.height) + "px";
+            this.$store.commit('scaleVal', global.accAdd(_this.scale, 0.2))
           }
-
-         _this.scaleVal = _this.accMul(_this.scale,100);
         }
-      },
-       // 两个浮点数求和
-      accAdd(num1,num2){
-        var r1,r2,m;
-        try{
-            r1 = num1.toString().split('.')[1].length;
-        }catch(e){
-            r1 = 0;
-        }
-        try{
-            r2=num2.toString().split(".")[1].length;
-        }catch(e){
-            r2=0;
-        }
-        m=Math.pow(10,Math.max(r1,r2));
-        return Math.round(num1*m+num2*m)/m;
-      },
-      // 两个浮点数相减
-      accSub(num1,num2){
-        var r1,r2,m;
-        try{
-            r1 = num1.toString().split('.')[1].length;
-        }catch(e){
-            r1 = 0;
-        }
-        try{
-            r2=num2.toString().split(".")[1].length;
-        }catch(e){
-            r2=0;
-        }
-        m=Math.pow(10,Math.max(r1,r2));
-        let n=(r1>=r2)?r1:r2;
-        return Number((Math.round(num1*m-num2*m)/m).toFixed(n));
-      },
-      // 两个浮点数相乘
-      accMul(num1,num2){
-          var m=0,s1=num1.toString(),s2=num2.toString(); 
-          try{m+=s1.split(".")[1].length}catch(e){};
-          try{m+=s2.split(".")[1].length}catch(e){};
-          return Number(s1.replace(".",""))*Number(s2.replace(".",""))/Math.pow(10,m);
-      },
-      // 两个浮点数相除
-      accDiv(num1,num2){
-          var t1,t2,r1,r2;
-          try{
-              t1 = num1.toString().split('.')[1].length;
-          }catch(e){
-              t1 = 0;
-          }
-          try{
-              t2=num2.toString().split(".")[1].length;
-          }catch(e){
-              t2=0;
-          }
-          r1=Number(num1.toString().replace(".",""));
-          r2=Number(num2.toString().replace(".",""));
-          return (r1/r2)*Math.pow(10,t2-t1);
-        }
-    },
-    computed: {
-      modulesText(){
-        return this.$store.getters.getAllComponents;
-      },
-      selectdate(){
-        return this.$store.getters.getSelectedStatus;
       }
     }
   }

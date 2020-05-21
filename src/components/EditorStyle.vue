@@ -84,7 +84,6 @@
               _this.arrObj = {}
           }
           // 单选的时候
-          // if(seletedComponent.length == 1 || seletedComponent.length == 0 && allObj.length == 1){
           if(seletedComponent.length == 1 ){        
               let obj = seletedComponent.length == 1?seletedComponent[0] : allObj[0]
               _this.selectedId.length = [];
@@ -110,7 +109,7 @@
               let arr = []; //存储共同属性
               //第一个选中元素属性为参照
               let sameAttr = Object.keys(seletedComponent[0].style);
-              for(let i = 1, len = seletedComponent.length; i<len;i++){
+              for(var i = 1, len = seletedComponent.length; i<len;i++){
                   _this.selectedId.push(seletedComponent[i].id);
                   let eleAttr = Object.keys(seletedComponent[i].style);
                   arr = eleAttr.filter(function(v){
@@ -129,11 +128,13 @@
 
                  attrArray = Array.from(new Set(attrArray));
 
-                if(attrArray.length == 1){
-                  str[sameAttr[k]].value = attrArray[0];
+                if(str[sameAttr[k]]){
+                  if(attrArray.length == 1){
+                    str[sameAttr[k]].value = attrArray[0];
+                  }
+                    this.$set(_this.arrObj,sameAttr[k],str[sameAttr[k]])
+                  }
                 }
-                this.$set(_this.arrObj,sameAttr[k],str[sameAttr[k]])
-              }
           }
       }
     },

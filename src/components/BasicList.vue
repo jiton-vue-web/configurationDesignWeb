@@ -7,7 +7,7 @@
           <p class="box-name">{{item.title}}</p>
         </template>
         <div class="item-flex">
-            <div class="flex-item" v-for="(value,index) in item.items" :key="index" draggable="true" @dragstart="onDragstart($event,value)">
+            <div class="flex-item" v-for="(value,index) in item.items" :key="index" draggable="true" @dragstart="onDragstart($event,value)" v-show="value.icon !=''">
               <i class="icon" :class="value.icon"></i>
               <p>{{value.text}}</p>
             </div>
@@ -28,11 +28,10 @@
         count:0,
       }
     },
-    mounted () {
+    created(){
       this.toolbox = [];
       this.toolbox.push(jsonBase);
       this.toolbox.push(jsonChart);
-
     },
     methods:{
       onDragstart(event, value){

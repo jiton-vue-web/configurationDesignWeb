@@ -27,6 +27,14 @@
             <i class="iconfont icon-jurassic_verticalalign-center"></i>
             <div class="iconText">垂直对齐</div>
           </div>
+          <div @click="setJustify(0)">
+            <i class="el-icon-more inconStyle"></i>
+            <div class="iconText">水平等间距</div>
+          </div>
+          <div @click="setJustify(1)">
+            <i class="el-icon-more inconStyle"></i>
+            <div class="iconText">垂直等间距</div>
+          </div>
           <div @click="ctrlZEvent()">
             <i class="el-icon-back inconStyle" ></i>
             <div class="iconText">撤销</div>
@@ -50,7 +58,8 @@
           <div>
             <el-switch
               active-color="#13ce66"
-              v-model="value">
+              v-model="drawModel"
+              @change="changeMode()">
             </el-switch>
             <div class="iconText">描图模式</div>
           </div>
@@ -75,7 +84,7 @@
         <el-aside>
           <editor-style></editor-style>
         </el-aside>
-        <DrawLayers class="drawLayersStyle" v-show="value"></DrawLayers>
+        <drawLayers class="drawLayersStyle" v-if="drawLayersModel"></drawLayers>
       </el-container>
     </el-container>
   </div>
@@ -85,25 +94,21 @@
   import DraRes from './DraRes'
   import EditorStyle from './EditorStyle'
   import BasicList from './BasicList'
-  import DrawLayers from './drawLayers'
+  import drawLayers from './drawLayers'
+  import global from './common.vue'
 
-  // drawLayers
-  // import ViewText from './ViewText'
-  // import ViewImage from './ViewImage'
 
   export default {
     components: {
       DraRes,
       EditorStyle,
       BasicList,
-      // ViewText,
-      // ViewImage
-      DrawLayers
+      drawLayers
     },
     data: function () {
       return {
         lists: {},
-        value:true
+        drawModel:false
       }
     },
     created () {
@@ -175,6 +180,105 @@
           })
         
         // this.$store.commit('selectedStatus', []) 
+      },
+      //水平，垂直等间距
+      setJustify(val){
+        let arr = this.$store.getters.getSelectedStatus;
+        if(arr.length >2){
+          if(val == 0){
+            //水平等间距
+            this.alignFun(arr,"x","w");
+          }else{
+            //垂直等间距
+            this.alignFun(arr,"y","h");
+          }
+           
+        }else{
+           this.$message({
+              message: '请选择两个以上元素',
+              type: 'warning'
+            });
+        }
+      },
+      // 水平或垂直等间距
+      alignFun(arr,n,m){
+        let copyArr = [];
+
+        let pointNum = [];
+        let arrNum = [];
+
+        arr.forEach((item,index)=>{
+            pointNum.push(item.style[n]);
+            arrNum.push(item.style[m]);
+
+            let newArrt = {};
+            let newStyle = {};
+
+            for(var k in item.style){
+              newStyle[k] = item.style[k];
+            }
+
+            for(var i in item){
+              if(i == "style"){
+                newArrt.style = newStyle;
+              }else{
+                newArrt[i] = item[i];
+              }
+            }
+            copyArr.push(newArrt);
+        })
+          
+          let minX = Math.min(...pointNum);
+          let maxX = Math.max(...pointNum);
+          let justifyWidth  = maxX - (minX + arrNum[pointNum.indexOf(minX)]);
+
+          if(justifyWidth>0){
+            //除首尾外元素外其他元素宽度求和
+            let sumWidth = 0;
+            arrNum.forEach((item,index) =>{
+              if(index != pointNum.indexOf(minX) && index != pointNum.indexOf(maxX)){
+                 sumWidth = sumWidth + item;
+              }
+            })
+
+            //元素宽度小于或等于间距
+            if(sumWidth <= justifyWidth){
+              //元素间的间距,取整
+              let everyWidth = parseInt(global.accDiv(global.accSub(justifyWidth,sumWidth),(arr.length - 1)));
+              let newObjArr = [];
+
+              var sortArr = function(a,b){ return a - b }
+              pointNum.sort(sortArr);
+               
+              copyArr.forEach((item)=>{
+                for(var i= 0 ,len = pointNum.length ;i<len;i++){
+                    if(item.style[n] == pointNum[i]){
+                      newObjArr[i] = item;
+                    }
+                }
+              })
+
+              for(var k = 1,len = newObjArr.length-1 ; k < len; k++){
+                let perW = global.accAdd(newObjArr[k-1].style[n],newObjArr[k-1].style[m]);
+                newObjArr[k].style[n] = global.accAdd(perW,everyWidth);
+              }
+
+              this.$store.commit('selectedStatus', newObjArr)
+
+            }else{
+              this.$message({
+                message: '中间元素宽度之和大于首尾元素间距',
+                type: 'warning'
+              });
+            }
+            
+          }else{
+            this.$message({
+              message: '元素水平间距小于或等于0',
+              type: 'warning'
+            });
+          }
+
       },
       //居中or垂直对齐，基于框选元素的最左值和最右值，最上值和最下值
       setCenterOrMiddle(val){
@@ -314,10 +418,17 @@
       //解除元素锁定
       unLockElement(){
           this.$store.commit('unLockElement');
+      },
+      changeMode(){
+        this.$store.commit('setDrawLayersModel',! this.drawLayersModel);
       }
     },
-    computed: {},
-
+    computed: {
+      drawLayersModel() {
+        this.drawModel = this.$store.getters.getNowModel;
+        return this.$store.getters.getNowModel; 
+      }
+    }
   }
 </script>
 
@@ -355,13 +466,9 @@
      border:1px solid #ccc;
      padding:0;
      margin:15px;
-     /* position: relative; */
   }
 
   .flex-box {
-    /*display: flex;*/
-    /*align-items: center;*/
-    /*justify-content: center;*/
     margin-top: 60px;
   }
 

@@ -42,8 +42,7 @@
         "url": "",
         "rotate":0
       }
-    }
-    ,
+    },
     {
       "text": "Button",
       "icon": "el-icon-open",
@@ -64,6 +63,34 @@
         "color": "#333",
         "fontSize": 16,
         "rotate":0
+      }
+    }
+    ,
+    {
+      "text":"Svg",
+      "icon": "",
+      "isFontIcon": true,
+      "type": "svg",
+      "disabled":false,
+      "active":false,
+      "style": {
+          "x": 100,
+          "y": 100,
+          "w": 100,
+          "h": 50,          
+        "backColor": "rgb(186, 236, 248)",
+        "zIndex": 1,
+        "lineHeight": 1.25,
+        "text": "Svg",
+        "color": "#333",
+        "fontSize": 16,
+        "rotate":0,
+        "pointArr":"",
+        "borderWidth":2,
+        "opacity":0.5,
+        "borderColor":"rgb(14, 131, 159)",
+        "scaleX":1,
+        "scaleY":1
       }
     }
   ]

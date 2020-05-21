@@ -710,7 +710,6 @@ export default {
     },
     // 检测对齐元素
     async snapCheck () {
-      
       let width = this.width
       let height = this.height
       if (this.snap) {
@@ -854,6 +853,7 @@ export default {
             }
           }
         }
+        console.log(refLine);
         this.$emit('refLineParams', refLine)
       }
     },
@@ -1110,7 +1110,7 @@ export default {
 </script>
 <style scoped>
 .changeColor{
-    border:1px solid rgba(70, 172, 245, 0.54);
+    border:2px solid rgba(70, 172, 245, 0.54);
 }
 
 .changeColor .view-text{

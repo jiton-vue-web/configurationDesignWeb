@@ -1,40 +1,64 @@
 <template>
   <div class="drawLayersStyle">
-   <svg width="100%" height="100%" @click="addPoint($event)" @keyup.prevent="keyupCtrl($event)" tabindex="1"  >
+   <svg width="100%" height="100%" @click="addPoint($event)" @keyup.prevent="keyupCtrl($event)" tabindex="1" @mousewheel="scaleFun($event)" :style="{transform:`scale(${scale})`}" >
      　<polygon 
-        :points="item.pointDate" v-for="(item,index) in polygonArr" :key="index" 
-        @mousedown="onMousDown"
-        @blur="onBlur(item)"
-        tabindex="2"
-        @click="item.active = !item.active"
+        v-for="(item,index) in pointObj"
+        :key="index"
+        :points="item"
         style="fill:rgb(186, 236, 248);stroke:rgb(14, 131, 159);stroke-width:2;fill-opacity:0.25"
-        :style="{stroke:(item.active?`rgb(239, 59, 59)`:`rgb(14, 131, 159)`)}"
+        /> 
+        <polygon 
+        :points="pointArr"
+        style="fill:rgb(186, 236, 248);stroke:rgb(14, 131, 159);stroke-width:2;fill-opacity:0.25"
         /> 
    </svg>
+   <input type="hidden" :value="clearDate">
   </div>
 </template>
 
 <script>
+import global from './common.vue'
 export default {
   name: 'SvgIcon',
   data () {
     return{
-      pointArr:""
+      pointArr:"",
+      pointObj:[]
     }
+  },
+  created(){
+    window.addEventListener('mousewheel', function(event){
+        if (event.ctrlKey === true || event.metaKey) {
+              event.preventDefault();
+        }
+    },{ passive: false});
+
+    //firefox
+    window.addEventListener('DOMMouseScroll', function(event){
+        if (event.ctrlKey === true || event.metaKey) {
+              event.preventDefault();
+        }
+    },{ passive: false});
   },
   computed: {
-    polygonArr(){
-       return this.$store.getters.getAllSvg; 
+    clearDate(){
+      let model = this.$store.getters.getNowModel;
+      if(!model){
+          this.pointArr = "";
+          this.pointObj = [];
+      }
+       return model;
     },
-    activeSvgArr(){
-       return this.$store.getters.getActiveSvg; 
+    scale(){
+      return this.$store.getters.getScaleVal;
     }
   },
-  mounted(){
-   
+  created(){
+      document.onselectstart = function(){return false;};
   },
   methods:{
     addPoint(event){
+      // ctrKey键画任意角度多边形
       if(event.ctrlKey){
         var layer = event.currentTarget;
         var position = layer.getBoundingClientRect();
@@ -43,71 +67,65 @@ export default {
         //第一个点，说明是新图形开始
         if(this.pointArr == ""){
           this.pointArr = this.pointArr + x +"," + y ;
-          let pointObj = {
-              id:(Math.random()*10000000).toString(16).substr(0,4),
-              active:true,
-              pointDate:""
-          }
-          this.$set(this.polygonArr, this.polygonArr.length == 0 ? 0 : this.polygonArr.length, pointObj); 
         }else{
-          this.pointArr = this.pointArr +" " +  + x +"," + y ;
-          let pointObj = {
-              id:this.polygonArr[this.polygonArr.length -1].id,
-              active:this.polygonArr[this.polygonArr.length -1].active,
-              pointDate:this.pointArr
-          }
-          this.$set(this.polygonArr, this.polygonArr.length -1 , pointObj); 
+          this.pointArr = this.pointArr +" " + x +"," + y ;
         }
-        this.$store.commit('addActiveSvg', this.polygonArr)
+      }
+
+      // shift键画水平垂直线
+      if(event.shiftKey){
+          var layer = event.currentTarget;
+          var position = layer.getBoundingClientRect();
+          let x = event.clientX - position.x;
+          let y = event.clientY - position.y;
+          //第一个点，说明是新图形开始
+          if(this.pointArr == ""){
+            this.pointArr = this.pointArr + x +"," + y ;
+          }else{
+            //只能与前一个点水平或垂直
+            let pointArr = this.pointArr.split(' ');
+            let xPoint = [];
+            let yPoint = [];
+
+            pointArr.forEach(item =>{
+              let point = item.split(",");
+              xPoint.push(Number(point[0]));
+              yPoint.push(Number(point[1]));
+            })
+
+            if(Math.abs(x - xPoint[xPoint.length - 1]) <  Math.abs(y - yPoint[xPoint.length - 1])){
+              this.pointArr = this.pointArr +" " + xPoint[xPoint.length - 1] +"," + y ;
+            }else{
+              this.pointArr = this.pointArr +" " + x +"," + yPoint[xPoint.length - 1];
+            }
+          }
       }
     },
-    onMousDown(event){
-        var  _this = this;
-        var layer = event.currentTarget;
-        var position = layer.getBoundingClientRect();
-        let x = event.clientX - position.x;
-        let y = event.clientY - position.y;
-        console.log("鼠标初始位置："+ x +","+ y)
-        document.onmousemove = (event)=> {
-            let moveX = event.clientX - position.x;
-            let moveY = event.clientY - position.y;
-            _this.moveSvg(moveX - x,moveY - y)
-        };
-
-        document.onmouseup = () => {
-          document.onmousemove = null;
-          document.onmouseup = null;
-        };
-    },
-    onMouseMove(event){
-      console.log(event)
-    },
-    activeSvg(item){
-        item.active != item.active;
-        if(item.active){
-          this.$store.commit('addActiveSvg', item)
-        }
-    },
-    moveSvg(offeX,offeY){
-      console.log("鼠标移动："+ offeX +","+ offeY);
-      let arr = [];
-      this.activeSvgArr.forEach(element => {
-          let pointPosition = element.splice();
-          let Obj = {
-              id:element.id,
-              active:element.active,
-              pointDate:this.pointArr
-            }
-          arr.push(Obj)
-      });
-    },
-    onBlur(item){
-      item.active = false;
-      this.$store.commit('addActiveSvg', item);
-    },
     keyupCtrl(){
-       this.pointArr = "";
-    }
+        let pointArr = this.pointArr.split(' ');
+        //大于两个点再生成控件
+        if(pointArr.length>2){
+          this.$store.commit('newSvgElement', this.pointArr);
+          this.pointObj.push(this.pointArr)
+        }
+
+        this.pointArr = "";
+    },
+     scaleFun(e){
+        var _this = this;
+        if(e.ctrlKey && _this.scale > 0.2 && _this.scale <3) {
+          var direction = e.deltaY>0?'down':'up';
+          if(direction == "down"){
+            this.$store.commit('scaleVal', global.accSub(_this.scale, 0.2))
+          }else{
+            this.$store.commit('scaleVal', global.accAdd(_this.scale, 0.2))
+          }
+         _this.scaleVal = global.accMul(_this.scale, 100);
+        }
+      }   
+  },
+  beforeDestroy() {
+      document.onselectstart = function(){return true;};
   }
 }
 </script>
@@ -125,6 +143,13 @@ export default {
   height:100%;
   width: calc(100vw - 647px);
   height: calc(100% - 30px);
-
 }
+
+.drawLayersStyle>svg{
+  transform-origin:0 0 0;
+}
+body{
+  user-select:none;
+}
+
 </style>

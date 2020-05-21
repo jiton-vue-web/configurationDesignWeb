@@ -32,6 +32,7 @@
   import {mapState} from 'vuex'
   import vueDraggableResizable from './vue-draggable-resizable' 
 
+
   export default {
     name: 'view-text',
     components: {
@@ -94,6 +95,7 @@
       getRefLineParams (params) {
         this.$emit('getRefLineParams', params)
       },
+      //拖拽开始
       onDragStartCallback (ev) {
         ev.stopPropagation()
       },

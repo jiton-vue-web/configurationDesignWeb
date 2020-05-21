@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import jsonBase from '../../static/json/basic.json';
 
 Vue.use(Vuex)
 
@@ -15,8 +16,8 @@ export default new Vuex.Store({
     viewZone:{}, //放置组件的区域范围信息
     scaleVal:1,//编辑区放大倍数
     attrObj:{}, //右侧需要显示的属性信息
-    activeSvg:[],//选中的svg图形
-    allSvg:[]
+    drawLayersModel:false,//是否描图模式
+    dragStartData:[], //图形区域最初大小备份
   },
   getters: {
     saleProducts: (state) => {
@@ -48,6 +49,12 @@ export default new Vuex.Store({
     },
     getAllSvg:(state)=>{
       return state.allSvg;
+    },
+    getNowModel:(state)=>{
+      return state.drawLayersModel;
+    },
+    getScaleVal:(state)=>{
+      return state.scaleVal;
     }
   },
   mutations: {
@@ -60,7 +67,7 @@ export default new Vuex.Store({
     viewZoneInfor:(state,payload)=>{
         state.viewZone = payload;
     },
-    //当前选中的控件
+    //单条数据，插入当前选中的控件or更新现有控件
     selectedStatus:(state, payload) => {
         // 去重
         let flag = [];
@@ -73,9 +80,7 @@ export default new Vuex.Store({
             for(var i in detailObj){
                 obj[i] = detailObj[i];
             }
-
             obj.active = false;
-
             arr.push(obj);
         })
 
@@ -103,7 +108,7 @@ export default new Vuex.Store({
       console.log("----")
 
     },
-    //按下CTRL键时，直接添加到已选数组
+    //单个插入，添加到已选数组
     addSelectedStatus:(state, payload) => {
       // 框选之后直接ctrl多选，需要去重
       let repeatIndex = "";
@@ -120,15 +125,12 @@ export default new Vuex.Store({
       if(repeatIndex == ""){
         state.selectedComponents.push(payload);
       }
-
       state.copySwitchElement = JSON.stringify(state.switchElement);
-      
       state.switchElement.forEach(item => {
           if(item.id == payload.id){
             item.active = true;
           }
       })
-
     },
     //保存框选起始点坐标
     setInitialPoint:(state,payload) => {
@@ -145,14 +147,34 @@ export default new Vuex.Store({
         if(state.selectedComponents.length>1){
             state.switchElement.forEach(item => {
               if(item.active == true){
-                item.style.w = payload.w
-                item.style.h = payload.h
+                if(item.type == 'svg'){
+                  state.dragStartData.forEach(element =>{
+                    console.log(item.style.w);
+                    console.log(element.style.w);
+                    if(item.id == element.id){
+                       item.style.scaleX = accDiv(item.style.w,element.style.w);
+                       item.style.scaleY = accDiv(item.style.h,element.style.h);
+                    }
+                  })
+                }
+                  item.style.w = payload.w
+                  item.style.h = payload.h
               }
             }) 
         }else{
           //单选赋值，匹配选中元素，赋值
           state.switchElement.forEach(item => {
             if(item.id == state.selectedComponents[0].id){
+              if(item.type == 'svg'){
+                state.dragStartData.forEach(element =>{
+                  console.log(item.style.w);
+                  console.log(element.style.w);
+                  if(item.id == element.id){
+                     item.style.scaleX = accDiv(item.style.w,element.style.w);
+                     item.style.scaleY = accDiv(item.style.h,element.style.h);
+                  }
+                })
+              }
                 item.style.x = payload.x
                 item.style.y = payload.y
                 item.style.w = payload.w
@@ -162,6 +184,7 @@ export default new Vuex.Store({
         }
 
     },
+    //数据停止拖拽时执行
     updateTextStyleDrag (state, payload) {
       state.switchElement.forEach(item => {
         if(item.id == payload.id){
@@ -188,7 +211,7 @@ export default new Vuex.Store({
     scaleVal(state,payload){
       state.scaleVal = payload;
     },
-    //删除选中元素
+    //删除正常模式选中元素
     removeComponents:(state) => {
       let allElementArr = [];
 
@@ -205,7 +228,8 @@ export default new Vuex.Store({
 
     },
      //复制选中元素
-     copyComponents:(state) =>{
+     setCopyComponents:(state) =>{
+
       state.copyComponents = [];
        //引用类型数据需要给副本循环赋值
       state.selectedComponents.forEach(item => {
@@ -275,6 +299,7 @@ export default new Vuex.Store({
             state.switchElement = []
         }
      },
+    
      //保存数据
      saveData:(state) =>{
        if(state.switchElement.length>0){
@@ -304,20 +329,85 @@ export default new Vuex.Store({
         }
       })
     },
-    addActiveSvg:(state,payload) =>{
-      let arr = []
-      state.activeSvg.forEach((item,index)=>{
-        if(item.id == payload.id){
-           arr.push(index)
-        }
+    setDrawLayersModel:(state,val)=>{
+        state.drawLayersModel = val;
+    },
+    //描图模式新建svg图形
+    newSvgElement:(state,payload)=>{
+      //新建svg图形对象
+      let svgObj = {};
+      let allTypeObj = jsonBase.items;
+      for(var i = 0 ,len = allTypeObj.length;i<len;i++){
+          if(allTypeObj[i].type == "svg"){
+            for(var k in allTypeObj[i]){
+              if(k == "style"){
+                svgObj.style = {}
+                for(var j in allTypeObj[i].style){
+                  svgObj.style[j] = allTypeObj[i].style[j]
+                }
+              }else{
+                svgObj[k] = allTypeObj[i][k];
+              }
+            }
+            break;
+          }
+      }
+
+      let pointArr = payload.split(' ');
+      let xPoint = [];
+      let yPoint = [];
+
+      pointArr.forEach(item =>{
+        let point = item.split(",");
+        xPoint.push(Number(point[0]));
+        yPoint.push(Number(point[1]));
       })
 
-      if(arr.length == 0){
-        state.activeSvg.push(payload);
-      }else{
-        state.activeSvg[arr[0]] = payload;
+     let xMinPoint = Math.min(...xPoint);
+     let yMinPoint = Math.min(...yPoint);
+     let xMaxPoint = Math.max(...xPoint);
+     let yMaxPoint = Math.max(...yPoint);
+
+      svgObj.id = (Math.random()*10000000).toString(16).substr(0,4);
+      
+      svgObj.style.x = xMinPoint;
+      svgObj.style.y = yMinPoint;
+      svgObj.style.w = xMaxPoint - xMinPoint;
+      svgObj.style.h = yMaxPoint - yMinPoint;
+
+      svgObj.style.pointArr = payload;
+
+      let newPointString = "";
+      xPoint.forEach((item,index) =>{
+        newPointString = newPointString +" "+ (xPoint[index] - xMinPoint) +"," + (yPoint[index] - yMinPoint); 
+      })
+
+      svgObj.style.pointArr = newPointString.trim();
+
+      state.copySwitchElement = JSON.stringify(state.switchElement);
+      state.switchElement.push(svgObj);
+      //保留最初始的值，用于计算放大倍数
+
+
+      let newArrt = {};
+      let newStyle = {};
+
+      for(var k in svgObj.style){
+        newStyle[k] = svgObj.style[k];
       }
-    }
+
+      for(var i in svgObj){
+        if(i == "style"){
+          newArrt.style = newStyle;
+        }else{
+          newArrt[i] = svgObj[i];
+        }
+      }
+      
+      state.dragStartData.push(newArrt);
+
+    },
+
   },
   actions: {
     reducePrice: (context, payload) => {
@@ -328,3 +418,20 @@ export default new Vuex.Store({
 
   }
 })
+
+function accDiv(num1,num2){
+  var t1,t2,r1,r2;
+  try{
+      t1 = num1.toString().split('.')[1].length;
+  }catch(e){
+      t1 = 0;
+  }
+  try{
+      t2=num2.toString().split(".")[1].length;
+  }catch(e){
+      t2=0;
+  }
+  r1=Number(num1.toString().replace(".",""));
+  r2=Number(num2.toString().replace(".",""));
+  return (r1/r2)*Math.pow(10,t2-t1);
+}
