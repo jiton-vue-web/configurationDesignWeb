@@ -21,17 +21,17 @@
           </div>
           <div @click="setCenterOrMiddle(0)">
             <i class="iconfont icon-jurassic_horizalign-center"></i>
-            <div class="iconText">水平对齐</div>
+            <div class="iconText">垂直对齐</div>
           </div>
           <div @click="setCenterOrMiddle(1)">
             <i class="iconfont icon-jurassic_verticalalign-center"></i>
-            <div class="iconText">垂直对齐</div>
+            <div class="iconText">水平对齐</div>
           </div>
-          <div @click="setJustify(0)">
+           <div @click="setJustify(1)">
             <i class="el-icon-more inconStyle"></i>
             <div class="iconText">水平等间距</div>
           </div>
-          <div @click="setJustify(1)">
+          <div @click="setJustify(0)">
             <i class="el-icon-more inconStyle"></i>
             <div class="iconText">垂直等间距</div>
           </div>
@@ -509,7 +509,7 @@
     height:calc(100% - 30px);
     position: absolute;
     z-index:9999;
-    background:rgba(0,0,0,.35);
+    background:rgba(0,0,0,0);
     top:15px;
     left:315px;
   }

@@ -22,6 +22,7 @@
     >
       <slot :name="handle"></slot>
     </div>
+    <div style="width:5px;heigth:5px;background:blue;position:absolute;top:-50px;left:50%;"></div>
     <slot></slot>
 
   </div>

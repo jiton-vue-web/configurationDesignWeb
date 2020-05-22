@@ -1,13 +1,15 @@
 <template>
   <div>
     <div class="title-style">{{$t('message.style')}}</div>
-    <el-form :model="arrObj" label-position="left" label-width="80px" class="formStyle">
+    <el-form :model="arrObj" label-position="left" label-width="90px" class="formStyle">
         <el-form-item :label="item.label" v-for="(item,index) in arrObj" :key="index">
             <el-input 
               v-if="item.component == 'input'" 
               v-model="item.value" 
               placeholder="请输入内容" 
               :type="item.inputType" 
+              size="mini"
+              class="commonStyle"
               @change="changeAttr(item.attr,item.value)">
             </el-input>
 
@@ -19,6 +21,7 @@
               :step="item.step"
               :controls-position="item.position"
               :precision="item.precision"
+              size="mini"
               @change="changeAttr(item.attr,item.value)"
             ></el-input-number>
 
@@ -26,7 +29,10 @@
               v-if="item.component == 'select'" 
               v-model="item.value" 
               placeholder="请选择" 
+              size="mini"
+              class="commonStyle"
               @change="changeAttr(item.attr,item.value)">
+              <!-- 动态option整理数据之后遍历obj插入即可 -->
                 <el-option
                   v-for="item in item.options"
                   :key="item.value"
@@ -42,6 +48,12 @@
               @change="changeAttr(item.attr,item.value)"
             ></el-color-picker>
 
+            <el-radio-group 
+              v-if="item.component == 'radio'"
+              v-model="item.value">
+              <el-radio :label="0">{{item.text[0]}}</el-radio>
+              <el-radio :label="1">{{item.text[1]}}</el-radio>
+            </el-radio-group>
         </el-form-item>
         <!-- <el-form-item>
             <el-button type="primary" @click="onSubmit">提交</el-button>
@@ -136,6 +148,8 @@
                   }
                 }
           }
+
+          console.log(_this.arrObj)
       }
     },
     methods: {
@@ -161,5 +175,17 @@
   .formStyle{
     height:calc(100vh - 110px);
     padding:0 20px;
+  }
+
+  .formStyle >>>.el-form-item{
+    margin-bottom: 10px;
+  }
+
+  .formStyle >>>.el-form-item__content{
+    text-align: left;
+  }
+
+  .commonStyle{
+    width:130px;
   }
 </style>

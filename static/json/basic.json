@@ -67,17 +67,17 @@
     }
     ,
     {
-      "text":"Svg",
+      "text":"SvgGraph",
       "icon": "",
       "isFontIcon": true,
-      "type": "svg",
+      "type":"svgGraph",
       "disabled":false,
       "active":false,
       "style": {
-          "x": 100,
-          "y": 100,
-          "w": 100,
-          "h": 50,          
+        "x": 100,
+        "y": 100,
+        "w": 100,
+        "h": 50,          
         "backColor": "rgb(186, 236, 248)",
         "zIndex": 1,
         "lineHeight": 1.25,
@@ -91,6 +91,33 @@
         "borderColor":"rgb(14, 131, 159)",
         "scaleX":1,
         "scaleY":1
+      }
+    },
+    {
+      "text":"Line",
+      "icon": "",
+      "isFontIcon": true,
+      "type":"line",
+      "disabled":false,
+      "active":false,
+      "style": {
+        "x": 0,
+        "y": 0,
+        "w": 5,
+        "h": 5,          
+        "zIndex": 1,
+        "rotate":0,
+        "warnRange":10,
+        "positionType":0,
+        "startPoint":0,
+        "warnMaxVal":100,
+        "warnMinVal":0,
+        "showStartEnd":0,
+        "startEndPosition":0,
+        "leakWaterPosition":0,
+        "showTooltip":0,
+        "tooltipPosition":0,
+        "warnPoint":30
       }
     }
   ]

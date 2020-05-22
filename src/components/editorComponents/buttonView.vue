@@ -1,6 +1,6 @@
 <template>
     <button
-        class="textareaStyle"
+        class="btnStyle"
         :style="{
             zIndex:obj.style.zIndex,
             fontSize: obj.style.fontSize + 'px',
@@ -38,8 +38,9 @@
 </script>
 
 <style>
-.textareaStyle{
+.btnStyle{
   width:100%;
+  height:100%;
   display:block;
   border:0;
 }

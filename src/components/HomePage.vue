@@ -1,20 +1,44 @@
 <template>
-    <div id="container">
-        <button @click="setAlign('top')">顶部对齐</button>
-        <button @click="setAlign('right')">右对齐</button>
-        <button @click="setAlign('bottom')">底部对齐</button>
-        <button @click="setAlign('left')">左对齐</button>
-        <button @click="setAlign('horizonal')">水平居中对齐</button>
-        <button @click="setAlign('vertical')">垂直居中对齐</button>
-        <button @click="setAlign('size')">调整大小</button>
-        <div id="dragArea" @mousedown="createBlock">
-            <div @mousedown="drag" data-num="one"></div>
-            <div @mousedown="drag" data-num="two"></div>
-            <div @mousedown="drag" data-num="three"></div>
-            <div @mousedown="drag" data-num="four"></div>
-            <span id="bgBlock"></span>
-        </div>
+    <svg xmlns="http://www.w3.org/2000/svg" >
+      <foreignobject width="120" height="50">
+    <div id="dragArea" class="page" @mousedown="createBlock" @mouseup="stopBlock" @mousewheel="scaleFun($event)" :style="{transform:`scale(${scale})`}" xmlns="http://www.w3.org/1999/xhtml">
+      <!-- <div @drop="onDropText($event)" @dragover.prevent @keyup="keyboardEvent($event)" tabindex="1" class="editorBox">
+        <view-text 
+          v-for="(item,index) in modulesText" 
+          :key="index" 
+          :type="item.type"
+          :detail="item"
+          @getRefLineParams="getRefLineParams"
+          :class="{disableStyle:item.disabled}"
+          :style="{transform:'rotate('+item.style.rotate+'deg)'}"
+           >
+        </view-text>
+        <div id="bgBlock"></div>
+
+        <span class="ref-line v-line" 
+            v-for="(item,index) in vLine" 
+            :key="'vLine'+index" v-show="item.display" 
+            :style="{ left: item.position, top: item.origin, height: item.lineLength}">
+        </span>
+
+        <span class="ref-line h-line"
+            v-for="(item,index) in hLine"
+            :key="'hLine'+index"
+            v-show="item.display"
+            :style="{ top: item.position, left: item.origin, width: item.lineLength}">
+        </span>
+
+      </div> -->
+      <p>hello</p>
     </div>
+      </foreignobject>
+              <path d="M0,380C90,30 90,380 300,38" stroke='#ccc' stroke-width='1.5px' fill='none'></path>
+
+    <!-- <div class="sliderStyle">
+       <el-slider v-model="scaleVal" :min="20" :max="300" :step="20" show-input @input="changeVal" :format-tooltip="formatTooltip"></el-slider>
+    </div> -->
+    
+  </svg>
     
 </template>
 

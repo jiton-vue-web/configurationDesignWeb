@@ -18,7 +18,7 @@
     :y="detail.style.y"
     :w="detail.style.w"
     :h="detail.style.h">
-    <div @keyup.delete="del($event)" tabindex="1" v-focus style="display:flex;width:100%">
+    <div @keyup.delete="del($event)" tabindex="1" v-focus style="height:100%;width:100%;">
       <!-- 编辑区加载不同组件的地方，以下 -->    
        <component :is="viewZoneComponent" :obj="detail" ></component>
       <!-- 编辑区加载不同组件的地方，以上-->

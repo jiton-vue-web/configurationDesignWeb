@@ -35,23 +35,7 @@
       }
     },
     methods: {
-        // addPoint(event){
-        //     if(event.ctrlKey){
-        //         var layer = event.currentTarget;
-        //         var position = layer.getBoundingClientRect();
-        //         let x = event.clientX - position.x;
-        //         let y = event.clientY - position.y;
-        //         //第一个点，说明是新图形开始
-        //         if(this.pointArr == ""){
-        //             this.pointArr = this.pointArr + x +"," + y ;
-        //         }else{
-        //             this.pointArr = this.pointArr +" " +  + x +"," + y ; 
-        //         }
-        //     }
-        // },
-        // keyupCtrl(){
-        //     this.pointArr = "";
-        // }
+
     }
   }
 </script>

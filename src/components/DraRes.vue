@@ -1,8 +1,9 @@
 <template>
-  <div>
-    <div id="dragArea" class="page" @mousedown="createBlock" @mouseup="stopBlock" @mousewheel="scaleFun($event)" :style="{transform:`scale(${scale})`}">
-      <div @drop="onDropText($event)" @dragover.prevent @keyup="keyboardEvent($event)" tabindex="1" class="editorBox">
-        <view-text 
+  <svg @click="addPoint($event)" @keyup.prevent="keyupShift($event),littileMoveFun($event)"  tabindex="1" xmlns="http://www.w3.org/2000/svg">
+  <foreignObject width="100%" height="100%">
+      <div div id="dragArea" class="page" @mousedown="createBlock" @mouseup="stopBlock" @mousewheel="scaleFun($event)" :style="{transform:`scale(${scale})`}" xmlns="http://www.w3.org/1999/xhtml">
+        <div @drop="onDropText($event)" @dragover.prevent @keyup="keyboardEvent($event)" tabindex="1" class="editorBox">
+          <view-text 
           v-for="(item,index) in modulesText" 
           :key="index" 
           :type="item.type"
@@ -13,7 +14,8 @@
            >
         </view-text>
         <div id="bgBlock"></div>
-
+        
+        </div>
         <span class="ref-line v-line" 
             v-for="(item,index) in vLine" 
             :key="'vLine'+index" v-show="item.display" 
@@ -26,15 +28,10 @@
             v-show="item.display"
             :style="{ top: item.position, left: item.origin, width: item.lineLength}">
         </span>
-
       </div>
-    </div>
+    </foreignObject>
+</svg>
 
-    <div class="sliderStyle">
-       <el-slider v-model="scaleVal" :min="20" :max="300" :step="20" show-input @input="changeVal" :format-tooltip="formatTooltip"></el-slider>
-    </div>
-    
-  </div>
 </template>
 
 <script>
@@ -54,8 +51,11 @@
         hLine: [],
         blockObj:{},
         blockBox:{},
-        // scale:1,
-        scaleVal:100
+        scaleVal:100,
+        pointArr:"",
+        oldY:null,
+        isdown:false,
+        deg:0
       }
     },
     created(){
@@ -86,9 +86,82 @@
       }
     },
     mounted () {
-     
+
     },
     methods: {
+      // mousedownTest(e){
+      //   var _this = this;
+      //   this.isdown = true;
+      //   this.oldY = e.clientY;
+      //   document.mousemove = (e)=>{
+      //    console.log("yes")
+      //       if(_this.isdown){
+      //           _this.deg = e.clientY - oldY;
+      //       }
+      //   }
+      //   document.onmouseup = () => {
+      //       _this.isdown = false;
+      //       _this.oldY = null;
+      //   }
+      // },
+      addPoint(event){
+        if(event.altKey){
+          var layer = event.currentTarget;
+          var position = layer.getBoundingClientRect();
+          let x = event.clientX - position.x;
+          let y = event.clientY - position.y;
+          //第一个点，说明是新图形开始
+          if(this.pointArr == ""){
+            this.pointArr = this.pointArr + x +"," + y ;
+          }else{
+            //只能与前一个点水平或垂直
+            let pointArr = this.pointArr.split(' ');
+            let xPoint = [];
+            let yPoint = [];
+
+            pointArr.forEach(item =>{
+              let point = item.split(",");
+              xPoint.push(Number(point[0]));
+              yPoint.push(Number(point[1]));
+            })
+
+            if(Math.abs(x - xPoint[xPoint.length - 1]) <  Math.abs(y - yPoint[xPoint.length - 1])){
+              this.pointArr = this.pointArr +" " + xPoint[xPoint.length - 1] +"," + y ;
+            }else{
+              this.pointArr = this.pointArr +" " + x +"," + yPoint[xPoint.length - 1];
+            }
+          }
+        }
+
+      },
+      littileMoveFun(event){
+        //快捷键前后左右移动 
+         // 下
+        if(event.keyCode==40){
+          this.$store.commit('littileMove', {x:0,y:1});
+        }
+        // 右
+        if(event.keyCode==39){
+          this.$store.commit('littileMove', {x:1,y:0});
+        }
+
+        // 上
+        if(event.keyCode==38){
+          this.$store.commit('littileMove', {x:0,y:-1});
+        }
+        // 左
+        if(event.keyCode==37){
+          this.$store.commit('littileMove', {x:-1,y:0});
+        }
+      },
+      keyupShift(){
+        let pointArr = this.pointArr.split(' ');
+        // //大于两个点再生成控件
+        if(pointArr.length == 2){
+          this.$store.commit('createLine', this.pointArr);
+        }
+        this.pointArr = "";
+      },
       //键盘响应快捷键
       keyboardEvent(e){
 
@@ -251,6 +324,8 @@
   }
 </script>
 <style>
+  .rectangle {fill: red;}
+
   .page {
     height: 100%;
     width: 100%;

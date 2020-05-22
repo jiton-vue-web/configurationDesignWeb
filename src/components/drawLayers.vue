@@ -100,6 +100,12 @@ export default {
             }
           }
       }
+      if(!event.shiftKey && !event.ctrlKey){
+         this.$message({
+            message: '描图模式，无法对元素进行更多操作',
+            type: 'warning'
+          });
+      }
     },
     keyupCtrl(){
         let pointArr = this.pointArr.split(' ');

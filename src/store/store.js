@@ -204,6 +204,15 @@ export default new Vuex.Store({
         })
       })
     },
+    //响应上下左右位移
+     littileMove (state, payload) {
+      state.switchElement.forEach(item => {
+        if(item.active == true){
+          item.style.x = item.style.x + payload.x
+          item.style.y = item.style.y + payload.y
+        }
+      })
+    },
     saveCopyArr(state,payload){
       state.copySwitchElement = JSON.stringify(state.switchElement);
     },
@@ -338,7 +347,7 @@ export default new Vuex.Store({
       let svgObj = {};
       let allTypeObj = jsonBase.items;
       for(var i = 0 ,len = allTypeObj.length;i<len;i++){
-          if(allTypeObj[i].type == "svg"){
+          if(allTypeObj[i].type == "svgGraph"){
             for(var k in allTypeObj[i]){
               if(k == "style"){
                 svgObj.style = {}
@@ -386,8 +395,8 @@ export default new Vuex.Store({
 
       state.copySwitchElement = JSON.stringify(state.switchElement);
       state.switchElement.push(svgObj);
-      //保留最初始的值，用于计算放大倍数
 
+      //保留最初始的值，用于计算放大倍数
 
       let newArrt = {};
       let newStyle = {};
@@ -407,6 +416,57 @@ export default new Vuex.Store({
       state.dragStartData.push(newArrt);
 
     },
+    createLine:(state,payload)=>{
+         //新建直线，其实是矩形
+         let svgObj = {};
+         let allTypeObj = jsonBase.items;
+         
+         for(var i = 0 ,len = allTypeObj.length;i<len;i++){
+             if(allTypeObj[i].type == "line"){
+               for(var k in allTypeObj[i]){
+                 if(k == "style"){
+                   svgObj.style = {}
+                   for(var j in allTypeObj[i].style){
+                     svgObj.style[j] = allTypeObj[i].style[j]
+                   }
+                 }else{
+                   svgObj[k] = allTypeObj[i][k];
+                 }
+               }
+               break;
+             }
+         }
+
+      let pointArr = payload.split(' ');
+      let xPoint = [];
+      let yPoint = [];
+
+      pointArr.forEach(item =>{
+        let point = item.split(",");
+        xPoint.push(Number(point[0]));
+        yPoint.push(Number(point[1]));
+      })
+   
+      svgObj.style.x = xPoint[0];
+      svgObj.style.y = yPoint[0];
+      
+      if(yPoint[1] == yPoint[0]){
+        svgObj.style.w = Math.abs(xPoint[1] - xPoint[0]);
+      }
+
+      if(xPoint[1] == xPoint[0]){
+        svgObj.style.h = Math.abs(yPoint[1] - yPoint[0]);
+      }
+      
+
+
+      svgObj.id = (Math.random()*10000000).toString(16).substr(0,4);
+      svgObj.active = true;
+
+      state.switchElement.push(svgObj);
+      state.selectedComponents.push(svgObj)
+
+    }
 
   },
   actions: {
