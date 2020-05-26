@@ -1,6 +1,7 @@
 <template>
   <div
-    :style="style"
+     ref="wrapper"
+    :style="[style,rotateStyle]"
     :class="[{
       [classNameActive]: enabled,
       [classNameDragging]: dragging,
@@ -167,12 +168,16 @@ export default {
       default: 'auto',
       validator: (val) => (typeof val === 'string' ? val === 'auto' : val >= 0)
     },
+    rotate:{
+       type: Number,
+       default: 0,
+       validator: (val) => typeof val === 'number'
+    },
     handles: {
       type: Array,
-      default: () => ['tl', 'tm', 'tr', 'mr', 'br', 'bm', 'bl', 'ml'],
+      default: () => ['tl', 'tm','rotate', 'tr', 'mr', 'br', 'bm', 'bl', 'ml'],
       validator: (val) => {
-        const s = new Set(['tl', 'tm', 'tr', 'mr', 'br', 'bm', 'bl', 'ml'])
-
+        const s = new Set(['tl', 'tm','rotate', 'tr', 'mr', 'br', 'bm', 'bl', 'ml'])
         return new Set(val.filter(h => s.has(h))).size === val.length
       }
     },
@@ -230,7 +235,22 @@ export default {
       type: Number,
       default: 1,
       validator: (val) => typeof val === 'number'
-    }
+    },
+    zoom: {
+      type: Number,
+      default: 1
+    },
+    rotate:{
+      type: Number,
+      default: 0
+    },
+    // value: {
+    //   default: function() {
+    //     
+    //     return { rotation: 0 };
+    //   },
+    //   type: Object
+    // },
   },
 
   data: function () {
@@ -262,10 +282,11 @@ export default {
       enabled: this.active,
       resizing: false,
       dragging: false,
-      zIndex: this.z
+      zIndex: this.z,
+
+      transform: this.rotate
     }
   },
-
   created: function () {
     // eslint-disable-next-line 无效的prop：minWidth不能大于maxWidth
     if (this.maxWidth && this.minWidth > this.maxWidth) console.warn('[Vdr warn]: Invalid prop: minWidth cannot be greater than maxWidth')
@@ -441,6 +462,11 @@ export default {
     },
     // 控制柄按下
     handleDown (handle, e) {
+      if( handle == "rotate"){
+        this._handlerType = "rotate";
+        this.handleRotateStart(e);
+        // this.$emit("rotate-start", e, this.transform);
+      }
       if (this.onResizeStart && this.onResizeStart(handle, e) === false) {
         return
       }
@@ -602,27 +628,40 @@ export default {
     },
     // 控制柄移动
     handleMove (e) {
-      const handle = this.handle
-      const mouseClickPosition = this.mouseClickPosition
+        const handle = this.handle;
+       if (handle.includes('rotate')) {
+          this.handleRotateMove(e);
+          this.$emit('resizing', {'rotate':this.transform})
+        }else{
+          const mouseClickPosition = this.mouseClickPosition
+          const tmpDeltaX = mouseClickPosition.mouseX - (e.touches ? e.touches[0].pageX : e.pageX)
+          const tmpDeltaY = mouseClickPosition.mouseY - (e.touches ? e.touches[0].pageY : e.pageY)
+          const [deltaX, deltaY] = this.snapToGrid(this.grid, tmpDeltaX, tmpDeltaY)
+          
+          if (handle.includes('b')) {
+            this.rawBottom = mouseClickPosition.bottom + deltaY
+          } else if (handle.includes('t')) {
+            this.rawTop = mouseClickPosition.top - deltaY
+          }
 
-      const tmpDeltaX = mouseClickPosition.mouseX - (e.touches ? e.touches[0].pageX : e.pageX)
-      const tmpDeltaY = mouseClickPosition.mouseY - (e.touches ? e.touches[0].pageY : e.pageY)
+          if (handle.includes('r')) {
+            this.rawRight = mouseClickPosition.right + deltaX
+          } else if (handle.includes('l')) {
+            this.rawLeft = mouseClickPosition.left - deltaX
+          }
 
-      const [deltaX, deltaY] = this.snapToGrid(this.grid, tmpDeltaX, tmpDeltaY)
+           let EleObj = {
+            x:this.left,
+            y:this.top,
+            w:this.width,
+            h:this.height
+          }
 
-      if (handle.includes('b')) {
-        this.rawBottom = mouseClickPosition.bottom + deltaY
-      } else if (handle.includes('t')) {
-        this.rawTop = mouseClickPosition.top - deltaY
-      }
+          this.$emit('resizing', EleObj)
 
-      if (handle.includes('r')) {
-        this.rawRight = mouseClickPosition.right + deltaX
-      } else if (handle.includes('l')) {
-        this.rawLeft = mouseClickPosition.left - deltaX
-      }
+        }
 
-      this.$emit('resizing', this.left, this.top, this.width, this.height)
+       
     },
     // 从控制柄松开
     async handleUp (e) {
@@ -853,7 +892,6 @@ export default {
             }
           }
         }
-        console.log(refLine);
         this.$emit('refLineParams', refLine)
       }
     },
@@ -892,6 +930,26 @@ export default {
       }
       const bln = AllLength === 1
       return { groupWidth, groupHeight, groupLeft, groupTop, bln }
+    },
+    handleRotateStart(event) {
+      let { clientX, clientY } = event.touches ? event.touches[0] : event;
+      let cx = this.left + this.width / 2,
+      cy = this.top + this.height / 2,
+      startAngle = (180 / Math.PI) * Math.atan2(clientY - cy, clientX - cx),
+      rotation = this.rotate;
+      this._rotateOpt = { cx, cy, startAngle, rotation };
+    },
+    handleRotateMove(event) {
+      let { cx, cy, startAngle, rotation } = this._rotateOpt;
+      let { clientX, clientY } = event.touches ? event.touches[0] : event;
+      let x = clientX - cx,
+        y = clientY - cy,
+        angle = (180 / Math.PI) * Math.atan2(y, x),
+        currentAngle = angle - startAngle,
+        r = rotation + currentAngle;
+      r = r % 360;
+      r = r < 0 ? r + 360 : r;
+      this.transform = Math.floor(r);
     }
   },
   computed: {
@@ -905,6 +963,11 @@ export default {
         zIndex: this.zIndex,
         ...(this.dragging && this.disableUserSelect ? userSelectNone : userSelectAuto)
       }
+    },
+    rotateStyle() {
+      return {
+        transform: `rotate(${this.rotate}deg)`
+      };
     },
     // 控制柄显示与否
     actualHandles () {
@@ -930,6 +993,9 @@ export default {
   },
 
   watch: {
+    // value(t) {
+    //   this.transform = t;
+    // },
     active (val) {
       this.enabled = val
 
@@ -1115,5 +1181,19 @@ export default {
 
 .changeColor .view-text{
     color:#fff !important;
+}
+
+.handle-rotate{
+    top: -30px;
+    left: 50%;
+    border-radius: 100%;
+    margin-left: -5px;
+    width:10px;
+    height:10px;
+    background-color: rgba(70, 172, 245, 0.54);
+}
+
+.handle-rotate:hover{
+  cursor:crosshair;
 }
 </style>

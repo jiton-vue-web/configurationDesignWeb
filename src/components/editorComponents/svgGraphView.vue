@@ -1,6 +1,6 @@
 <template>
     <div class="drawLayersStyle">
-    <svg :width="obj.style.w +'px'" :height="obj.style.h +'px'">
+      <svg :width="obj.style.w +'px'" :height="obj.style.h +'px'" :viewBox="`0 0 ${widthVal} ${heightVal}`" preserveAspectRatio="xMidYMid meet">
         　<polygon 
             :points="obj.style.pointArr"
             :style="{
@@ -31,7 +31,27 @@
     props:["obj"],
     data () {
       return {
-          pointArr:""
+          pointArr:"",
+          widthVal:this.obj.style.w,
+          heightVal:this.obj.style.h
+      }
+    },
+    watch: {
+      "obj.style.w": {
+      handler(newVal, oldVal) {
+        if(oldVal == newVal){
+          this.widthVal = newVal
+        }
+      },
+      deep: true
+      },
+      "obj.style.h": {
+      handler(newVal, oldVal) {
+        if(oldVal == newVal){
+          this.heightVal = newVal
+        }
+      },
+      deep: true
       }
     },
     methods: {

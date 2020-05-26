@@ -3,7 +3,7 @@
     class="draText"
     :onDragStart="onDragStartCallback"
     @dragstop="(x,y) => onDrag(x,y, type)"
-    @resizing="(x,y,w,h) => onResize(x,y,w,h, type)"
+    @resizing="onResize"
     @dragging="onDragging"
     @activated="onActivated"
     @deactivated="onDeactivated"
@@ -17,7 +17,8 @@
     :x="detail.style.x"
     :y="detail.style.y"
     :w="detail.style.w"
-    :h="detail.style.h">
+    :h="detail.style.h"
+    :rotate="detail.style.rotate">
     <div @keyup.delete="del($event)" tabindex="1" v-focus style="height:100%;width:100%;">
       <!-- 编辑区加载不同组件的地方，以下 -->    
        <component :is="viewZoneComponent" :obj="detail" ></component>
@@ -99,8 +100,8 @@
       onDragStartCallback (ev) {
         ev.stopPropagation()
       },
-      onResize (x, y, w, h) {
-        this.$store.commit('updateTextStyleResize', {x, y, w, h})
+      onResize (val) {
+        this.$store.commit('updateTextStyleResize', val)
       },
       onDrag (x, y, type) {
         this.$store.commit('updateTextStyleDrag', {x, y, type});

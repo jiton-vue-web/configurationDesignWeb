@@ -10,7 +10,6 @@
           :detail="item"
           @getRefLineParams="getRefLineParams"
           :class="{disableStyle:item.disabled}"
-          :style="{transform:'rotate('+item.style.rotate+'deg)',transformOrigin:0}"
            >
         </view-text>
         <div id="bgBlock"></div>
@@ -150,7 +149,6 @@
       },
       //键盘响应快捷键
       keyboardEvent(e){
-
           // Delete
           if(e.code == "Delete"){
             this.$store.commit('removeComponents');
@@ -211,6 +209,7 @@
         this.$store.commit('selectedStatus', [])
         let bgBlock = document.getElementById('bgBlock');
         let dragArea = document.getElementById("dragArea");
+        let dragAreaPosition = dragArea.getBoundingClientRect();
         let initL = e.clientX;
         let initT = e.clientY;
 
@@ -236,9 +235,9 @@
           this.blockObj.height = Math.abs(h);
 
           if(e.clientX - initL > 0) {
-            this.setPosition(bgBlock,initT- dragArea.offsetTop, initL-dragArea.offsetLeft);
+            this.setPosition(bgBlock,initT - dragAreaPosition.y, initL - dragAreaPosition.x);
           } else {
-            this.setPosition(bgBlock,initT- dragArea.offsetTop+h, initL-dragArea.offsetLeft+w);
+            this.setPosition(bgBlock,initT - dragAreaPosition.y + h, initL - dragAreaPosition.x + w);
           }
         };
 

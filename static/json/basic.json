@@ -85,6 +85,8 @@
         "color": "#333",
         "fontSize": 16,
         "rotate":0,
+        "xPercent":[],
+        "yPercent":[],
         "pointArr":"",
         "borderWidth":2,
         "opacity":0.5,

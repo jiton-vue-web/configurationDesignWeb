@@ -142,43 +142,28 @@ export default new Vuex.Store({
     },
     updateTextStyleResize (state, payload) {
       //某个对象宽高变化
-        // state.copySwitchElement = JSON.stringify(state.switchElement);
         //多选拖拽
         if(state.selectedComponents.length>1){
             state.switchElement.forEach(item => {
-              if(item.active == true){
-                if(item.type == 'svg'){
-                  state.dragStartData.forEach(element =>{
-                    console.log(item.style.w);
-                    console.log(element.style.w);
-                    if(item.id == element.id){
-                       item.style.scaleX = accDiv(item.style.w,element.style.w);
-                       item.style.scaleY = accDiv(item.style.h,element.style.h);
-                    }
-                  })
-                }
+              if(item.active == true){                
+                if('rotate' in payload){
+                  item.style.rotate = payload.rotate
+                }else{
                   item.style.w = payload.w
                   item.style.h = payload.h
-              }
+                }
+              } 
+                
             }) 
         }else{
           //单选赋值，匹配选中元素，赋值
           state.switchElement.forEach(item => {
             if(item.id == state.selectedComponents[0].id){
-              if(item.type == 'svg'){
-                state.dragStartData.forEach(element =>{
-                  console.log(item.style.w);
-                  console.log(element.style.w);
-                  if(item.id == element.id){
-                     item.style.scaleX = accDiv(item.style.w,element.style.w);
-                     item.style.scaleY = accDiv(item.style.h,element.style.h);
-                  }
-                })
-              }
                 item.style.x = payload.x
                 item.style.y = payload.y
                 item.style.w = payload.w
                 item.style.h = payload.h
+                item.style.rotate = payload.rotate
             }
           })
         }
@@ -300,8 +285,6 @@ export default new Vuex.Store({
      },
      //返回上一状态
      preState:(state) =>{
-       console.log("上一状态");
-       console.log(state.copySwitchElement)
         if(state.copySwitchElement != ""){
             state.switchElement = JSON.parse(state.copySwitchElement);
         }else{
@@ -377,6 +360,7 @@ export default new Vuex.Store({
      let xMaxPoint = Math.max(...xPoint);
      let yMaxPoint = Math.max(...yPoint);
 
+
       svgObj.id = (Math.random()*10000000).toString(16).substr(0,4);
       
       svgObj.style.x = xMinPoint;
@@ -395,26 +379,6 @@ export default new Vuex.Store({
 
       state.copySwitchElement = JSON.stringify(state.switchElement);
       state.switchElement.push(svgObj);
-
-      //保留最初始的值，用于计算放大倍数
-
-      let newArrt = {};
-      let newStyle = {};
-
-      for(var k in svgObj.style){
-        newStyle[k] = svgObj.style[k];
-      }
-
-      for(var i in svgObj){
-        if(i == "style"){
-          newArrt.style = newStyle;
-        }else{
-          newArrt[i] = svgObj[i];
-        }
-      }
-      
-      state.dragStartData.push(newArrt);
-
     },
     createLine:(state,payload)=>{
          //新建直线，其实是矩形
@@ -504,4 +468,12 @@ function accDiv(num1,num2){
   r1=Number(num1.toString().replace(".",""));
   r2=Number(num2.toString().replace(".",""));
   return (r1/r2)*Math.pow(10,t2-t1);
+}
+
+  // 两个浮点数相乘
+  function accMul(num1,num2){
+    var m=0,s1=num1.toString(),s2=num2.toString(); 
+    try{m+=s1.split(".")[1].length}catch(e){};
+    try{m+=s2.split(".")[1].length}catch(e){};
+    return Number(s1.replace(".",""))*Number(s2.replace(".",""))/Math.pow(10,m);
 }
