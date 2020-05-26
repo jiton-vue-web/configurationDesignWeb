@@ -103,8 +103,8 @@
       "style": {
         "x": 0,
         "y": 0,
-        "w": 5,
-        "h": 5,          
+        "w": 6,
+        "h": 6,          
         "zIndex": 1,
         "rotate":0,
         "warnRange":10,

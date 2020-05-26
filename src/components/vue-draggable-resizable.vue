@@ -437,7 +437,6 @@ export default {
     // 控制柄触摸按下
     handleTouchDown (handle, e) {
       eventsFor = events.touch
-
       this.handleDown(handle, e)
     },
     // 控制柄按下

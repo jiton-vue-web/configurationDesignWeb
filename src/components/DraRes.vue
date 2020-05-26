@@ -10,7 +10,7 @@
           :detail="item"
           @getRefLineParams="getRefLineParams"
           :class="{disableStyle:item.disabled}"
-          :style="{transform:'rotate('+item.style.rotate+'deg)'}"
+          :style="{transform:'rotate('+item.style.rotate+'deg)',transformOrigin:0}"
            >
         </view-text>
         <div id="bgBlock"></div>
@@ -89,21 +89,7 @@
 
     },
     methods: {
-      // mousedownTest(e){
-      //   var _this = this;
-      //   this.isdown = true;
-      //   this.oldY = e.clientY;
-      //   document.mousemove = (e)=>{
-      //    console.log("yes")
-      //       if(_this.isdown){
-      //           _this.deg = e.clientY - oldY;
-      //       }
-      //   }
-      //   document.onmouseup = () => {
-      //       _this.isdown = false;
-      //       _this.oldY = null;
-      //   }
-      // },
+
       addPoint(event){
         if(event.altKey){
           var layer = event.currentTarget;
@@ -209,21 +195,17 @@
         var layer = event.currentTarget;
         var position = layer.getBoundingClientRect();
 
-        console.log(position)
-        console.log("多位小数")
-
         this.$store.commit('viewZoneInfor', position);
 
-        console.log(position)
-          let infoJson = event.dataTransfer.getData('my-info')
-          if(infoJson != ""){
-              // this.$store.commit('saveCopyArr'); //通知复制副本
-              this.itemText = JSON.parse(infoJson)
-              this.itemText.style.x = event.clientX - position.x;
-              this.itemText.style.y = event.clientY - position.y;
-              this.itemText.id = (Math.random()*10000000).toString(16).substr(0,4);
-              this.$store.commit('selectedStatus', [this.itemText])   
-          }
+        let infoJson = event.dataTransfer.getData('my-info')
+        if(infoJson != ""){
+            // this.$store.commit('saveCopyArr'); //通知复制副本
+            this.itemText = JSON.parse(infoJson)
+            this.itemText.style.x = event.clientX - position.x;
+            this.itemText.style.y = event.clientY - position.y;
+            this.itemText.id = (Math.random()*10000000).toString(16).substr(0,4);
+            this.$store.commit('selectedStatus', [this.itemText])   
+        }
       },
       createBlock(e) {
         this.$store.commit('selectedStatus', [])

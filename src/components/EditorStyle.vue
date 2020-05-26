@@ -50,7 +50,8 @@
 
             <el-radio-group 
               v-if="item.component == 'radio'"
-              v-model="item.value">
+              v-model="item.value"
+              @change="changeAttr(item.attr,item.value)">
               <el-radio :label="0">{{item.text[0]}}</el-radio>
               <el-radio :label="1">{{item.text[1]}}</el-radio>
             </el-radio-group>

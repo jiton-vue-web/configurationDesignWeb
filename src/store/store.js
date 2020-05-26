@@ -450,13 +450,23 @@ export default new Vuex.Store({
       svgObj.style.x = xPoint[0];
       svgObj.style.y = yPoint[0];
       
+      
       if(yPoint[1] == yPoint[0]){
         svgObj.style.w = Math.abs(xPoint[1] - xPoint[0]);
       }
 
-      if(xPoint[1] == xPoint[0]){
-        svgObj.style.h = Math.abs(yPoint[1] - yPoint[0]);
+       if(xPoint[1] == xPoint[0]){
+        svgObj.style.w = Math.abs(yPoint[1] - yPoint[0]);
+        svgObj.style.rotate = 90;
+        svgObj.style.positionType = 1;
+        
       }
+      
+
+      // if(xPoint[1] == xPoint[0]){
+      //   svgObj.style.rotate = 90;
+      //   // svgObj.style.positionType = 1;
+      // }
       
 
 
