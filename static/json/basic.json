@@ -119,7 +119,8 @@
         "leakWaterPosition":0,
         "showTooltip":0,
         "tooltipPosition":0,
-        "warnPoint":30
+        "warnPoint":30,
+        "borderRadius":6
       }
     }
   ]

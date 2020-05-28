@@ -8,7 +8,7 @@
       [classNameResizing]: resizing,
       [classNameDraggable]: draggable,
       [classNameResizable]: resizable
-    }, className,,{changeColor:active}]"
+    }, className,{changeColor:active}]"
     @mousedown="elementDown"
     @touchstart="elementTouchDown"
   >
@@ -243,14 +243,7 @@ export default {
     rotate:{
       type: Number,
       default: 0
-    },
-    // value: {
-    //   default: function() {
-    //     
-    //     return { rotation: 0 };
-    //   },
-    //   type: Object
-    // },
+    }
   },
 
   data: function () {
@@ -465,7 +458,6 @@ export default {
       if( handle == "rotate"){
         this._handlerType = "rotate";
         this.handleRotateStart(e);
-        // this.$emit("rotate-start", e, this.transform);
       }
       if (this.onResizeStart && this.onResizeStart(handle, e) === false) {
         return
@@ -932,16 +924,20 @@ export default {
       return { groupWidth, groupHeight, groupLeft, groupTop, bln }
     },
     handleRotateStart(event) {
-      let { clientX, clientY } = event.touches ? event.touches[0] : event;
-      let cx = this.left + this.width / 2,
-      cy = this.top + this.height / 2,
-      startAngle = (180 / Math.PI) * Math.atan2(clientY - cy, clientX - cx),
-      rotation = this.rotate;
-      this._rotateOpt = { cx, cy, startAngle, rotation };
+      let viewZone = this.$store.getters.getViewZoneInfor;
+      let clientX = event.clientX - viewZone.x;
+      let clientY = event.clientY - viewZone.y;
+      let cx = this.left + this.width / 2, //中心点
+          cy = this.top + this.height / 2,  //中心点，元素的中间点
+          startAngle = (180 / Math.PI) * Math.atan2(clientY - cy, clientX - cx), //两点之间的角度获取
+          rotation = this.rotate;
+      this._rotateOpt = { cx, cy, startAngle, rotation};
     },
     handleRotateMove(event) {
-      let { cx, cy, startAngle, rotation } = this._rotateOpt;
-      let { clientX, clientY } = event.touches ? event.touches[0] : event;
+      let { cx, cy, startAngle, rotation} = this._rotateOpt;
+      let viewZone = this.$store.getters.getViewZoneInfor;
+      let clientX = event.clientX - viewZone.x;
+      let clientY = event.clientY - viewZone.y;
       let x = clientX - cx,
         y = clientY - cy,
         angle = (180 / Math.PI) * Math.atan2(y, x),
@@ -950,6 +946,7 @@ export default {
       r = r % 360;
       r = r < 0 ? r + 360 : r;
       this.transform = Math.floor(r);
+      console.log(this.transform)
     }
   },
   computed: {
@@ -958,8 +955,8 @@ export default {
         position: 'absolute',
         top: this.top + 'px',
         left: this.left + 'px',
-        width: this.width + 'px',
-        height: this.height + 'px',
+        width: this.width + 2 + 'px',
+        height: this.height + 2 + 'px',
         zIndex: this.zIndex,
         ...(this.dragging && this.disableUserSelect ? userSelectNone : userSelectAuto)
       }
@@ -1195,5 +1192,9 @@ export default {
 
 .handle-rotate:hover{
   cursor:crosshair;
+}
+
+.handle{
+  z-index: 1;
 }
 </style>

@@ -4,53 +4,61 @@
   "opened": false,
   "items": [
     {
-      "text": "bar",
-      "icon": "el-icon-pie-chart",
+      "text": "参数表格",
+      "icon": "el-icon-s-grid",
       "isFontIcon": true,
-      "info": {
-        "type": "bar",
-        "action": [],
-        "dataBind": {
-          "sn": "",
-          "title": "",
-          "biz": "",
-          "queryParam": {}
-        },
-        "style": {
-          "position": {
-            "x": 0,
-            "y": 0,
-            "w": 200,
-            "h": 200
-          },
-          "backColor": "white",
-          "zIndex": 1
-        }
+      "type": "parameterTable",
+      "disabled":false,
+      "active":true,
+      "style": {
+        "x": 0,
+        "y": 0,
+        "w": 650,
+        "h": 250,
+        "zIndex": 1,
+        "rotate":0,
+        "opactiy":1
       }
     },
     {
-      "text": "line",
-      "icon": "el-icon-data-line",
+      "text": "参数组合",
+      "icon": "el-icon-s-grid",
       "isFontIcon": true,
-      "info": {
-        "type": "line",
-        "action": [],
-        "dataBind": {
-          "sn": "",
-          "title": "",
-          "biz": "",
-          "queryParam": {}
-        },
-        "style": {
-          "position": {
-            "x": 0,
-            "y": 0,
-            "w": 200,
-            "h": 200
-          },
-          "backColor": "white",
-          "zIndex": 1
-        }
+      "type": "parameterCombination",
+      "disabled":false,
+      "active":true,
+      "style": {
+        "x": 0,
+        "y": 0,
+        "w": 650,
+        "h": 250,
+        "zIndex": 1,
+        "rotate":0,
+        "opactiy":1,
+        "wanringEvent":0,
+        "analogsInfor":0,
+        "stateInfor":0,
+        "propertyInfor":1,
+        "tabPosition":"top"
+      }
+    },{
+      "text": "参数表格概况",
+      "icon": "el-icon-s-grid",
+      "isFontIcon": true,
+      "type": "parameterTableSurvey",
+      "disabled":false,
+      "active":true,
+      "style": {
+        "x": 0,
+        "y": 0,
+        "w": 650,
+        "h": 250,
+        "zIndex": 1,
+        "rotate":0,
+        "opactiy":1,
+        "text":"标题文本",
+        "color":"#333",
+        "argumentsName":"参数1%参数2%参数3%参数4"
       }
     }
   ]

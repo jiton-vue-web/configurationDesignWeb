@@ -11,7 +11,8 @@
             :style="{
                 width:obj.style.w + 'px',
                 height:obj.style.h + 'px',
-                zIndex:obj.style.zIndex
+                zIndex:obj.style.zIndex,
+                borderRadius:obj.style.borderRadius,
               }">
               <div class="warginRange" :style="warginRangeObj" v-if="obj.style.leakWaterPosition == 0"></div>
           </div>
@@ -65,7 +66,7 @@
           }
 
           this.triangleStyle = {
-            marginLeft:this.triangleLeft,
+            marginLeft:`calc( ${this.triangleLeft} - 7px)`,
             transform:'rotate(180deg)'
           }
 
@@ -83,7 +84,7 @@
           }
 
           this.triangleStyle = {
-              marginLeft:this.triangleLeft,
+              marginLeft:`calc( ${this.triangleLeft} - 7px)`
           }
 
           return {
@@ -154,7 +155,9 @@
 .lineStyle{
   overflow: hidden;
   border:0;
-  background-color:rgba(121, 266, 252,0.67);
+  background-image:url('~@/assets/images/leakyLine.png');
+  background-repeat:repeat-x;
+  background-size:contain;
   position: relative;
 }
 

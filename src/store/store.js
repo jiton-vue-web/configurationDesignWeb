@@ -159,11 +159,14 @@ export default new Vuex.Store({
           //单选赋值，匹配选中元素，赋值
           state.switchElement.forEach(item => {
             if(item.id == state.selectedComponents[0].id){
+              if('rotate' in payload){
+                item.style.rotate = payload.rotate
+              }else{
                 item.style.x = payload.x
                 item.style.y = payload.y
                 item.style.w = payload.w
                 item.style.h = payload.h
-                item.style.rotate = payload.rotate
+              }
             }
           })
         }

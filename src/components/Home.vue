@@ -29,11 +29,11 @@
           </div>
            <div @click="setJustify(1)">
             <i class="el-icon-more inconStyle"></i>
-            <div class="iconText">水平等间距</div>
+            <div class="iconText">垂直等间距</div>
           </div>
           <div @click="setJustify(0)">
             <i class="el-icon-more inconStyle"></i>
-            <div class="iconText">垂直等间距</div>
+            <div class="iconText">水平等间距</div>
           </div>
           <div @click="ctrlZEvent()">
             <i class="el-icon-back inconStyle" ></i>

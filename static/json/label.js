@@ -265,8 +265,91 @@ const obj = {
       // max:10,
       position:'right',
       disabled:false
+    },
+    "opactiy":{
+      attr:"opactiy",
+      label:'透明度',
+      component:'inputNumber',
+      precision:2,
+      value:1,
+      step:0.1,
+      min:0,
+      // max:10,
+      position:'right',
+      disabled:false
+    },
+    "wanringEvent":{
+      attr:"wanringEvent",
+      label:'显示报警事件',
+      component:'radio',
+      text:["是","否"],
+      value:0,
+      disabled:false
+    },
+    "analogsInfor":{
+      attr:"analogsInfor",
+      label:'显示模拟量',
+      component:'radio',
+      text:["是","否"],
+      value:0,
+      disabled:false
+    },
+    "stateInfor":{
+      attr:"stateInfor",
+      label:'显示状态量',
+      component:'radio',
+      text:["是","否"],
+      value:0,
+      disabled:false
+    },
+    "propertyInfor":{
+      attr:"propertyInfor",
+      label:'显示资产详情',
+      component:'radio',
+      text:["是","否"],
+      value:0,
+      disabled:false
+    },
+    // "argumentsNumber":{
+    //   attr:"argumentsNumber",
+    //   label:'参数个数',
+    //   component:'inputNumber',
+    //   precision:0,
+    //   value:1,
+    //   step:1,
+    //   min:0,
+    //   // max:10,
+    //   position:'right',
+    //   disabled:false
+    // },
+    "argumentsName": {
+      attr:"argumentsName",
+      label:'参数名称',
+      value:"参数名称",
+      component:'textarea',
+      row:2,
+      disabled:false
+    },
+    "tabPosition":{
+      attr:"tabPosition",
+      label:'标签位置',
+      component:'select',
+      value:'top',
+      options:[{
+          value: 'top',
+          label: 'top'
+        }, {
+          value: 'right',
+          label: 'right'
+        }, {
+          value: 'bottom',
+          label: 'bottom'
+        }, {
+          value: 'left',
+          label: 'left'
+        }],
+      disabled:false
     }
-    
 }
 
 export default obj;

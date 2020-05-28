@@ -149,6 +149,7 @@ export default {
   height:100%;
   width: calc(100vw - 647px);
   height: calc(100% - 30px);
+  background-color:rgba(0,0,0,.45)
 }
 
 .drawLayersStyle>svg{
