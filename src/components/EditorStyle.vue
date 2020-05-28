@@ -10,7 +10,7 @@
               :type="item.inputType" 
               size="mini"
               class="commonStyle"
-              @change="changeAttr(item.attr,item.value)">
+              @input="changeAttr(item.attr,item.value)">
             </el-input>
 
             <el-input-number  
@@ -55,6 +55,15 @@
               <el-radio :label="0">{{item.text[0]}}</el-radio>
               <el-radio :label="1">{{item.text[1]}}</el-radio>
             </el-radio-group>
+
+            <el-input
+              v-if="item.component == 'textarea'"
+              v-model="item.value"
+              type="textarea"
+              :rows="item.row"
+              placeholder="请输入内容"
+              @change="changeAttr(item.attr,item.value)">>
+            </el-input>
         </el-form-item>
         <!-- <el-form-item>
             <el-button type="primary" @click="onSubmit">提交</el-button>
@@ -74,7 +83,8 @@
       return {
           showForm:false,
           arrObj:{},
-          selectedId:[]
+          selectedId:[],
+          data:this.$store.getters.getSelectedStatus
       }
     },
     created () {
