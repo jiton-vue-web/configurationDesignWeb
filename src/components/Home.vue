@@ -120,68 +120,56 @@
         this.$i18n.locale = lang
         localStorage.setItem('lang', lang)
       },
-      //左对齐or 上对齐
+      //所有元素基于第一个选中元素对齐
+      //左对齐or上对齐
       setLeftOrTop(val){
-          let arr = this.$store.getters.getSelectedStatus;
-          let numberArr = [];
-          let sortObjArr = [];
+        let firstEleArr = this.$store.getters.getFirstSelectEle;
+        let arr = this.$store.getters.getSelectedStatus;
+        let sortObjArr = [];
           arr.forEach(item => {
-            if(val == 0){
-              numberArr.push(item.style.x)
-            }else{
-              numberArr.push(item.style.y)
-            }
-              
-          })
+            let obj = { 
+                id:item.id,
+                type:item.type,
+                style:item.style,
+                active:true,
+                disabled:item.disabled
+              };
 
-          arr.forEach(item => {
-              let obj = { 
-                  id:item.id,
-                  type:item.type,
-                  style:item.style,
-                  active:true
-                };
-              if(val == 0){
-                obj.style.x = Math.min(...numberArr)
-              }else{
-                obj.style.y = Math.min(...numberArr)
-              }
-              sortObjArr.push(obj);
-          })
+            if(val == 0){
+              obj.style.x = firstEleArr.style.x;
+            }else{
+              obj.style.y = firstEleArr.style.y;
+            }
+            sortObjArr.push(obj);
+        })
         
-        // this.$store.commit('selectedStatus', []) 
+        this.$store.commit('selectedStatus', sortObjArr) 
       },
       //右对齐or下对齐
       setRightOrBottom(val){
+          let firstEleArr = this.$store.getters.getFirstSelectEle;
           let arr = this.$store.getters.getSelectedStatus;
-          let numberArr = [];
           let sortObjArr = [];
-          arr.forEach(item => {
-            if(val == 0){
-              numberArr.push(item.style.x + item.style.w)
-            }else{
-              numberArr.push(item.style.y + item.style.h)
-            }
-          })
 
           arr.forEach(item => {
               let obj = { 
                   id:item.id,
                   type:item.type,
                   style:item.style,
-                  active:true
+                  active:true,
+                  disabled:item.disabled
                 };
               if(val == 0){
-                obj.style.x = (Math.max(...numberArr) - obj.style.w)
+                obj.style.x = global.accSub(global.accAdd(firstEleArr.style.x,firstEleArr.style.w),obj.style.w)
               }else{
-                obj.style.y = (Math.max(...numberArr) - obj.style.h)
+                obj.style.y = global.accSub(global.accAdd(firstEleArr.style.y,firstEleArr.style.h),obj.style.h)
               }
               sortObjArr.push(obj);
           })
         
-        // this.$store.commit('selectedStatus', []) 
+          this.$store.commit('selectedStatus', sortObjArr) 
       },
-      //水平，垂直等间距
+      //水平\垂直等间距
       setJustify(val){
         let arr = this.$store.getters.getSelectedStatus;
         if(arr.length >2){
@@ -200,10 +188,8 @@
             });
         }
       },
-      // 水平或垂直等间距
       alignFun(arr,n,m){
         let copyArr = [];
-
         let pointNum = [];
         let arrNum = [];
 
@@ -227,6 +213,8 @@
             }
             copyArr.push(newArrt);
         })
+
+        debugger;
           
           let minX = Math.min(...pointNum);
           let maxX = Math.max(...pointNum);
@@ -246,23 +234,25 @@
               //元素间的间距,取整
               let everyWidth = parseInt(global.accDiv(global.accSub(justifyWidth,sumWidth),(arr.length - 1)));
               let newObjArr = [];
-
+              
+              //从大到小排序,以便确定哪个元素在X轴排序位置
               var sortArr = function(a,b){ return a - b }
               pointNum.sort(sortArr);
-               
-              copyArr.forEach((item)=>{
-                for(var i= 0 ,len = pointNum.length ;i<len;i++){
+
+              for(var i= 0 ,len = pointNum.length ;i<len;i++){ 
+                copyArr.forEach((item)=>{
                     if(item.style[n] == pointNum[i]){
                       newObjArr[i] = item;
                     }
-                }
-              })
+                })
+              }
 
               for(var k = 1,len = newObjArr.length-1 ; k < len; k++){
                 let perW = global.accAdd(newObjArr[k-1].style[n],newObjArr[k-1].style[m]);
                 newObjArr[k].style[n] = global.accAdd(perW,everyWidth);
               }
 
+              //倒序插入，不影响第判断框选第一个选中的数组元素
               this.$store.commit('selectedStatus', newObjArr)
 
             }else{
@@ -280,73 +270,20 @@
           }
 
       },
-      //居中or垂直对齐，基于框选元素的最左值和最右值，最上值和最下值
+      //水平or垂直对齐
       setCenterOrMiddle(val){
           let _this = this;
-          let arr = this.$store.getters.getSelectedStatus;
-          let point = this.$store.getters.getInitialPoint;
-
-          //计算选中控件的四个角坐标
-          var elementPoint={};
-          for(let i = 0, len = arr.length; i<len;i++){
-               let ele = arr[i];
-               elementPoint[ele.id] = 
-               [[ele.style.x, ele.style.y] , 
-               [(ele.style.x + ele.style.w), (ele.style.y + ele.style.h)] , 
-               [(ele.style.x + ele.style.w), ele.style.y] , 
-               [ele.style.x, (ele.style.y + ele.style.h)]];
-          }
-
-          // 计算框选初始点与被选元素之间的距离
-          
-          let minDistanceObj = [];
-          for (let k in elementPoint){
-            let minDistance = "";
-            elementPoint[k].forEach((item,index) =>{
-              //如果元素x,或y坐标与框选初始点相同，直线距离
-              if(item[0].x == point.x || item[1].y == point.y){
-                  minDistance = item[0].x == point.x ? Math.abs(item[1].y - point.y) : Math.abs(item[0].x - point.x);
-              }
-            })
-
-            //循环之后如果没有得到直线值，则计算四点之间的距离
-            if(minDistance == ""){
-                minDistance = _this.calcLine(elementPoint[k]);
-            }
-
-            minDistanceObj.push({id:k,min:minDistance})
-          }
-
-          //所有元素最小值比较得出最终id
-          let minDistanceArr = []
-          minDistanceObj.forEach((element,index) =>{
-            if(index == 0){
-              minDistanceArr.push(element)
-            }else{
-              element.min < minDistanceArr[0].min ? minDistanceArr.unshift(element) : minDistanceArr.push(element)
-            }
-          })
-
-          // minDistanceArr[0].id 即距离最近的控件
-          let minObj = {};
-          for(let i = 0, len = arr.length; i<len;i++){
-              if(arr[i].id == minDistanceArr[0].id){
-                  minObj = arr[i];
-                  break;
-              }
-          }
-
-           console.log(minDistanceArr[0]);
-           console.log("最小距离对象");
+          let firstEleArr = this.$store.getters.getFirstSelectEle; 
+          let arr = this.$store.getters.getSelectedStatus;         
 
           //计算距离，将其余组件中轴线与最近组件中轴线对齐
-          let centerX = (minObj.style.x + (minObj.style.w / 2));
-          let centerY = (minObj.style.y + (minObj.style.h / 2));
+          let centerX = (firstEleArr.style.x + (firstEleArr.style.w / 2));
+          let centerY = (firstEleArr.style.y + (firstEleArr.style.h / 2));
 
            for(let n = 0; n<arr.length; n++){
              //水平居中0，设置Y属性；垂直居中1，设置x属性
              //最近元素本身不需要移动
-             if(arr[n].id != minObj.id){
+             if(arr[n].id != firstEleArr.id){
                if(val == 0){
                     let x = arr[n].style.x + (arr[n].style.w / 2);
                     if(x > centerX){
@@ -366,26 +303,9 @@
               
           }
 
-          console.log("数组")
-          console.log(arr)
-          // this.$store.commit('selectedStatus', arr) 
-          // this.$store.commit('selectedStatus', []) 
+          this.$store.commit('selectedStatus', arr) 
       },
-      //计算三角形斜边，用于计算选框起始点到选中元素四点之间的距离
-      calcLine(pointArr){
-        let point = this.$store.getters.getInitialPoint;
-        console.log("fun起始坐标 : ("+point.x+","+point.y+ ")")
-        let distanceArr = [];
-
-        pointArr.forEach((item) =>{
-          let tdWidth =  Math.abs(item[0] - point.x);
-          let tdHeight = Math.abs(item[1] - point.y);
-          let tdHr =  Math.sqrt(Math.pow(tdWidth ,2) + Math.pow(tdHeight ,2));
-          distanceArr.push(tdHr)
-        })
-
-        return Math.min(...distanceArr)
-      },
+     
       ctrlZEvent(){
         this.$store.commit('preState');
       },

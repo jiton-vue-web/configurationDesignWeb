@@ -1,36 +1,48 @@
 <template>
-  <svg @click="addPoint($event)" @keyup.prevent="keyupShift($event),littileMoveFun($event)"  tabindex="1" xmlns="http://www.w3.org/2000/svg">
-  <foreignObject width="100%" height="100%">
-      <div div id="dragArea" class="page" @mousedown="createBlock" @mouseup="stopBlock" @mousewheel="scaleFun($event)" :style="{transform:`scale(${scale})`}" xmlns="http://www.w3.org/1999/xhtml">
-        <div @drop="onDropText($event)" @dragover.prevent @keyup="keyboardEvent($event)" tabindex="1" class="editorBox">
-          <view-text 
-          v-for="(item,index) in modulesText" 
-          :key="index" 
-          :type="item.type"
-          :detail="item"
-          @getRefLineParams="getRefLineParams"
-          :class="{disableStyle:item.disabled}"
-           >
-        </view-text>
-        <div id="bgBlock"></div>
+<div @mousewheel="scaleFun($event)">
+  <div :style="{transform:`scale(${scale})`}" class="scaleBox">
+    <svg @click="addPoint($event)" @keyup.prevent="keyupShift($event),littileMoveFun($event)" width="100%" height="100%" tabindex="1" xmlns="http://www.w3.org/2000/svg">
+      <foreignObject width="100%" height="100%">
+          <div div id="dragArea" class="page" @mousedown="createBlock" @mouseup="stopBlock" xmlns="http://www.w3.org/1999/xhtml">
+            <div @drop="onDropText($event)" @dragover.prevent @keyup="keyboardEvent($event)" tabindex="1" class="editorBox">
+              <view-text 
+              v-for="(item,index) in modulesText" 
+              :key="index" 
+              :type="item.type"
+              :detail="item"
+              @getRefLineParams="getRefLineParams"
+              :class="{disableStyle:item.disabled}"
+              >
+            </view-text>
+            <div id="bgBlock"></div>
+            
+            </div>
+            <span class="ref-line v-line" 
+                v-for="(item,index) in vLine" 
+                :key="'vLine'+index" v-show="item.display" 
+                :style="{ left: item.position, top: item.origin, height: item.lineLength}">
+            </span>
+
+            <span class="ref-line h-line"
+                v-for="(item,index) in hLine"
+                :key="'hLine'+index"
+                v-show="item.display"
+                :style="{ top: item.position, left: item.origin, width: item.lineLength}">
+            </span>
+          </div>
+
         
-        </div>
-        <span class="ref-line v-line" 
-            v-for="(item,index) in vLine" 
-            :key="'vLine'+index" v-show="item.display" 
-            :style="{ left: item.position, top: item.origin, height: item.lineLength}">
-        </span>
-
-        <span class="ref-line h-line"
-            v-for="(item,index) in hLine"
-            :key="'hLine'+index"
-            v-show="item.display"
-            :style="{ top: item.position, left: item.origin, width: item.lineLength}">
-        </span>
+        </foreignObject>
+     </svg>
+  </div>
+     <div class="sliderBox" :style="{width:260+'px',right:430+'px'}">
+       <div class="sliderShow">
+          <span class="demonstration">{{scaleVal+'%'}}</span>
+          <el-slider v-model="scaleVal" :format-tooltip="formatTooltip" :min="20" :max="200" @input="changeVal" :marks="marks" :show-tooltip="false" show-stops :step="20"></el-slider>
+       </div>
+        
       </div>
-    </foreignObject>
-</svg>
-
+  </div>
 </template>
 
 <script>
@@ -54,7 +66,7 @@
         pointArr:"",
         oldY:null,
         isdown:false,
-        deg:0
+        deg:0,
       }
     },
     created(){
@@ -88,7 +100,6 @@
 
     },
     methods: {
-
       addPoint(event){
         if(event.altKey){
           var layer = event.currentTarget;
@@ -117,8 +128,8 @@
             }
           }
         }
-
       },
+      
       littileMoveFun(event){
         //快捷键前后左右移动 
          // 下
@@ -234,11 +245,22 @@
           this.blockObj.width = Math.abs(w);
           this.blockObj.height = Math.abs(h);
 
-          if(e.clientX - initL > 0) {
+          //左上>右下
+          if(w > 0 && h>0) {
             this.setPosition(bgBlock,initT - dragAreaPosition.y, initL - dragAreaPosition.x);
-          } else {
+          } 
+          //左下>右上
+          if(w > 0 && h<0) {
+            this.setPosition(bgBlock,initT - dragAreaPosition.y + h, initL - dragAreaPosition.x);
+          } 
+          //右下>左上
+          if(w < 0 && h<0) {
             this.setPosition(bgBlock,initT - dragAreaPosition.y + h, initL - dragAreaPosition.x + w);
           }
+           //右上>左下
+          if(w < 0 && h>0) {
+            this.setPosition(bgBlock,initT - dragAreaPosition.y , initL - dragAreaPosition.x + w);
+          } 
         };
 
         document.onmouseup = () => {
@@ -276,6 +298,13 @@
                     objArr.push(item)
                 }
           });
+
+          if(objArr.length>0){
+            this.$store.commit('setBoxSelect', true)
+          }else{
+            this.$store.commit('setBoxSelect', false)
+          }
+           
           this.$store.commit('selectedStatus', objArr) 
         }
         
@@ -292,7 +321,7 @@
       },
       scaleFun(e){
         var _this = this;
-        if(e.ctrlKey && _this.scale > 0.2 && _this.scale <3) {
+        if(e.ctrlKey && _this.scale >= 0.2 && _this.scale <3) {
           var direction = e.deltaY>0?'down':'up';
           if(direction == "down"){
             this.$store.commit('scaleVal', global.accSub(_this.scale, 0.2))
@@ -305,6 +334,13 @@
   }
 </script>
 <style>
+
+  .scaleBox{
+    transform-origin:0 0 0;
+    width: 100%;
+    height: 100%;
+  }
+
   .rectangle {fill: red;}
 
   .page {
@@ -314,7 +350,7 @@
     /* background-color:#f5f5f5; */
     box-sizing: content-box;
     position: relative;
-    transform-origin:0 0 0;
+    user-select: none; /*禁止文字选中*/
   }
 
   #bgBlock {
@@ -344,6 +380,21 @@
    .disableStyle{
     cursor: not-allowed;
     pointer-events: none; /*禁止鼠标点击事件*/
+  }
+
+  .sliderBox{
+    position: fixed;
+    bottom: 60px;
+  }
+
+  .sliderShow{
+    position: relative;
+  }
+
+  .sliderShow >span{
+    position: absolute;
+    top:8px;
+    right:-70px;
   }
 
 

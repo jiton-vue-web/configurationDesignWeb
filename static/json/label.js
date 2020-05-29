@@ -310,18 +310,6 @@ const obj = {
       value:0,
       disabled:false
     },
-    // "argumentsNumber":{
-    //   attr:"argumentsNumber",
-    //   label:'参数个数',
-    //   component:'inputNumber',
-    //   precision:0,
-    //   value:1,
-    //   step:1,
-    //   min:0,
-    //   // max:10,
-    //   position:'right',
-    //   disabled:false
-    // },
     "argumentsName": {
       attr:"argumentsName",
       label:'参数名称',

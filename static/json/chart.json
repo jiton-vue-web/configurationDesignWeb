@@ -58,7 +58,7 @@
         "opactiy":1,
         "text":"标题文本",
         "color":"#333",
-        "argumentsName":"参数1%参数2%参数3%参数4"
+        "argumentsName":""
       }
     }
   ]

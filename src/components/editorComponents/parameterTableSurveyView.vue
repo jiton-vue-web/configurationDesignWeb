@@ -77,25 +77,40 @@
       NameArr(){
         let _this = this;
         let titleArr = [];
-        let argumentsName = this.obj.style.argumentsName.split("%"); //获取到新属性表头
-        for(var k=0; k < argumentsName.length; k++){
-          _this.tableData.forEach((item,index)=>{
-            item['arr'+k] = "属性值" + index;
+        if(this.obj.style.argumentsName != ""){
+          let argumentsName = this.obj.style.argumentsName.split("%"); //获取到新属性表头
+          let tableDataObj = JSON.parse(window.localStorage.getItem("tableData"));
+          for(var k=0; k < argumentsName.length - 1; k++){
+            tableDataObj.forEach((item,index)=>{
+              item['arr'+k] = "属性值" + index;
+            })
+          }
+
+          for(var i in tableDataObj[0]) {
+              if(i.indexOf("arr") != -1){
+                titleArr.push({arr:i,label:""})
+              }
+          }
+
+          titleArr.forEach((ele,j)=>{
+              ele.label = argumentsName[j]
           })
-        }
 
-        for(var i in this.tableData[0]) {
-            if(i.indexOf("arr") != -1){
-              titleArr.push({arr:i,label:""})
-            }
+          this.tableData = tableDataObj;
         }
+        
 
-        titleArr.forEach((ele,j)=>{
-            ele.label = argumentsName[j]
-        })
+        
         this.loading = false;
         return titleArr;
       }
+    },
+    created(){
+      debugger;
+       window.localStorage.setItem("tableData",JSON.stringify(this.tableData));
+    },
+    beforeDestroy(){
+       window.localStorage.removeItem("tableData") 
     },
     methods: {
       tableRowClassName({row, rowIndex}) {

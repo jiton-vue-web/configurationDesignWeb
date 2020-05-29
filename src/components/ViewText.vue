@@ -110,6 +110,9 @@
       //点击元素外任何地方的时候执行
       onDeactivated(){
           //  let arr = this.$store.getters.getSelectedStatus;
+          //  console.log("清空数组了吗")
+          //  console.log(arr.length)
+
           //已选只有单个元素的时候清空已选数组
           //  if(arr.length == 1 && !event.ctrlKey){
           //     this.$store.commit('selectedStatus', [])
@@ -173,7 +176,7 @@
           obj.active = true;
 
           this.$store.commit('addSelectedStatus', obj) 
-
+          this.$store.commit('setCtrlSelect', true)
         }else{
           let arr = this.$store.getters.getSelectedStatus;
           let flag = false;
@@ -185,12 +188,6 @@
           
           //点击的元素不属于框选元素的时候执行
           if(!flag){
-              // let obj = { 
-              //     id:this.detail.id,
-              //     type:this.detail.type,
-              //     style:this.detail.style,
-              //     active:true
-              //   };
               let detailObj = this.detail;
               let obj = {}
               for(var i in detailObj){
@@ -208,7 +205,7 @@
         this.active = val.ifActive;       
       }
     },
-    mounted () {
+    mounted() {
         this.active = this.detail.active
     }
   }

@@ -18,6 +18,8 @@ export default new Vuex.Store({
     attrObj:{}, //右侧需要显示的属性信息
     drawLayersModel:false,//是否描图模式
     dragStartData:[], //图形区域最初大小备份
+    boxSelect:false, //是否框选选中，默认否
+    ctrlSelect:false  //是否多选选中，默认否
   },
   getters: {
     saleProducts: (state) => {
@@ -55,6 +57,73 @@ export default new Vuex.Store({
     },
     getScaleVal:(state)=>{
       return state.scaleVal;
+    },
+    getFirstSelectEle:(state)=>{
+       //计算第一个选中的元素
+       //纯多选 直接使用已选数组第一条数据计算
+       if(state.boxSelect == false && state.ctrlSelect == true){
+          return state.selectedComponents[0];
+        }
+
+      //纯框选 || 先框选再多选 第一个选中元素都在框选中，直接使用框选算法
+      debugger;
+      if(state.boxSelect == true && state.ctrlSelect == false || state.boxSelect == true && state.ctrlSelect == true){
+          let arr = state.selectedComponents;
+          let point = state.initialPoint;
+
+          //计算选中控件的四个角坐标
+          var elementPoint={};
+          for(let i = 0, len = arr.length; i<len;i++){
+               let ele = arr[i];
+               elementPoint[ele.id] = 
+               [[ele.style.x, ele.style.y] , 
+               [(ele.style.x + ele.style.w), (ele.style.y + ele.style.h)] , 
+               [(ele.style.x + ele.style.w), ele.style.y] , 
+               [ele.style.x, (ele.style.y + ele.style.h)]];
+          }
+
+          // 计算框选初始点与被选元素之间的距离
+          
+          let minDistanceObj = [];
+          for (let k in elementPoint){
+            let minDistance = "";
+            elementPoint[k].forEach((item,index) =>{
+              //如果元素x,或y坐标与框选初始点相同，直线距离
+              if(item[0].x == point.x || item[1].y == point.y){
+                  minDistance = item[0].x == point.x ? Math.abs(item[1].y - point.y) : Math.abs(item[0].x - point.x);
+              }
+            })
+
+            //循环之后如果没有得到直线值，则计算四点之间的距离
+            if(minDistance == ""){
+                minDistance = calcLine(elementPoint[k],state.initialPoint);
+            }
+
+            minDistanceObj.push({id:k,min:minDistance})
+          }
+
+          //所有元素最小值比较得出最终id
+          let minDistanceArr = []
+          minDistanceObj.forEach((element,index) =>{
+            if(index == 0){
+              minDistanceArr.push(element)
+            }else{
+              element.min < minDistanceArr[0].min ? minDistanceArr.unshift(element) : minDistanceArr.push(element)
+            }
+          })
+
+          // minDistanceArr[0].id 即距离最近的控件
+          let minObj = {};
+          for(let i = 0, len = arr.length; i<len;i++){
+              if(arr[i].id == minDistanceArr[0].id){
+                  minObj = arr[i];
+                  break;
+              }
+          }
+          console.log(minDistanceArr[0]);
+          console.log("最小距离对象");
+           return minObj;
+        }
     }
   },
   mutations: {
@@ -67,7 +136,7 @@ export default new Vuex.Store({
     viewZoneInfor:(state,payload)=>{
         state.viewZone = payload;
     },
-    //单条数据，插入当前选中的控件or更新现有控件
+    //插入当前选中的控件or更新现有控件
     selectedStatus:(state, payload) => {
         // 去重
         let flag = [];
@@ -89,6 +158,7 @@ export default new Vuex.Store({
               state.switchElement.forEach((item,index) =>{
                 if(item.id == ele.id){
                     arr.splice(index,1,ele);
+                    // arr.push(ele)
                     flag.push(index)
                 }
             })
@@ -103,9 +173,9 @@ export default new Vuex.Store({
         state.selectedComponents = payload;
         state.switchElement = arr;
 
-      console.log("已选中")
-      console.log(state.selectedComponents)
-      console.log("----")
+        console.log("已选中")
+        console.log(state.selectedComponents)
+        console.log("----")
 
     },
     //单个插入，添加到已选数组
@@ -131,12 +201,13 @@ export default new Vuex.Store({
             item.active = true;
           }
       })
+
+      state.ctrlSelect = true; //ctrl插入
     },
     //保存框选起始点坐标
     setInitialPoint:(state,payload) => {
       state.initialPoint = payload;
     },
-
     components (state, payload) {
       state.components.push(payload.component)
     },
@@ -192,7 +263,13 @@ export default new Vuex.Store({
         })
       })
     },
-    //响应上下左右位移
+    setBoxSelect(state, payload){
+      state.boxSelect = payload;
+    },
+    setCtrlSelect(state, payload){
+      state.ctrlSelect = payload;
+    },
+    //响应键盘事件上下左右位移
      littileMove (state, payload) {
       state.switchElement.forEach(item => {
         if(item.active == true){
@@ -222,6 +299,9 @@ export default new Vuex.Store({
 
       state.selectedComponents = [];
       state.switchElement = allElementArr;
+
+      state.boxSelect = false; //清空已选，框选状态还原
+      state.ctrlSelect = false; //清空已选，ctrl选状态还原
 
     },
      //复制选中元素
@@ -428,20 +508,14 @@ export default new Vuex.Store({
         svgObj.style.positionType = 1;
         
       }
-      
-
-      // if(xPoint[1] == xPoint[0]){
-      //   svgObj.style.rotate = 90;
-      //   // svgObj.style.positionType = 1;
-      // }
-      
-
 
       svgObj.id = (Math.random()*10000000).toString(16).substr(0,4);
       svgObj.active = true;
 
       state.switchElement.push(svgObj);
       state.selectedComponents.push(svgObj)
+
+      state.ctrlSelect = true;
 
     }
 
@@ -455,6 +529,21 @@ export default new Vuex.Store({
 
   }
 })
+
+ //计算三角形斜边，用于计算选框起始点到选中元素四点之间的距离
+ function calcLine(pointArr,point){
+  console.log("fun起始坐标 : ("+point.x+","+point.y+ ")")
+  let distanceArr = [];
+
+  pointArr.forEach((item) =>{
+    let tdWidth =  Math.abs(item[0] - point.x);
+    let tdHeight = Math.abs(item[1] - point.y);
+    let tdHr =  Math.sqrt(Math.pow(tdWidth ,2) + Math.pow(tdHeight ,2));
+    distanceArr.push(tdHr)
+  })
+
+  return Math.min(...distanceArr)
+}
 
 function accDiv(num1,num2){
   var t1,t2,r1,r2;
